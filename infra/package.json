@@ -1,0 +1,24 @@
+{
+  "name": "infrastructure",
+  "version": "0.1.0",
+  "bin": {
+    "infrastructure": "bin/infrastructure.js"
+  },
+  "scripts": {
+    "watch": "tsc -w",
+    "test": "jest",
+    "cdk": "cdk",
+    "lint": "eslint '{lib,bin,test}/**/*.ts' --fix"
+  },
+  "devDependencies": {
+    "jest": "29.7.0",
+    "ts-jest": "29.2.5",
+    "aws-cdk": "2.161.1",
+    "ts-node": "10.9.2"
+  },
+  "dependencies": {
+    "aws-cdk-lib": "2.161.1",
+    "constructs": "10.0.0",
+    "source-map-support": "0.5.21"
+  }
+}
