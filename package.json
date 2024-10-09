@@ -10,9 +10,11 @@
     "build": "turbo run build",
     "lint": "turbo run lint",
     "test": "turbo run test",
-    "prepare": "husky install"
+    "prepare": "husky"
   },
-  "keywords": ["BTC"],
+  "keywords": [
+    "BTC"
+  ],
   "author": "Pablo Albaladejo",
   "license": "ISC",
   "description": "",
