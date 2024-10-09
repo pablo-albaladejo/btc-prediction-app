@@ -1,4 +1,3 @@
-import { APIGatewayProxyEvent } from "aws-lambda";
 import { handler } from ".";
 import axios from "axios";
 
@@ -15,9 +14,7 @@ describe("getPrice handler", () => {
       },
     });
 
-    const event = {} as APIGatewayProxyEvent;
-
-    const result = await handler(event);
+    const result = await handler();
 
     expect(result.statusCode).toBe(200);
     expect(result.body).toBe(JSON.stringify({ price: 34000.5 }));
@@ -26,9 +23,7 @@ describe("getPrice handler", () => {
   it("should return 500 if there is an error fetching the price", async () => {
     mockedAxios.get.mockRejectedValue(new Error("API error"));
 
-    const event = {} as APIGatewayProxyEvent;
-
-    const result = await handler(event);
+    const result = await handler();
 
     expect(result.statusCode).toBe(500);
     expect(JSON.parse(result.body).message).toBe("Error fetching BTC price");
