@@ -47,8 +47,8 @@ jobs:
 
       - name: Deploy Frontend Stack
         if: env.frontend == 'true' || env.infra == 'true'
-        run: npx cdk deploy FrontendStack --require-approval never
+        run: cd infra && npx cdk deploy FrontendStack --require-approval never
 
       - name: Deploy Backend Stack
         if: env.backend == 'true' || env.infra == 'true'
-        run: npx cdk deploy BackendStack --require-approval never
+        run: cd infra && npx cdk deploy BackendStack --require-approval never
