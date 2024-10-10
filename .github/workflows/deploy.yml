@@ -45,9 +45,17 @@ jobs:
             echo "infra=true" >> $GITHUB_ENV
           fi
 
+      - name: Build Frontend
+        if: env.frontend == 'true' || env.infra == 'true'
+        run: cd apps/frontend && npm run build
+
       - name: Deploy Frontend Stack
         if: env.frontend == 'true' || env.infra == 'true'
         run: cd infra && npx cdk deploy FrontendStack --require-approval never
+
+      - name: Build Backend
+        if: env.backend == 'true' || env.infra == 'true'
+        run: cd apps/backend && npm run build
 
       - name: Deploy Backend Stack
         if: env.backend == 'true' || env.infra == 'true'
