@@ -19,6 +19,7 @@ export const sendMessage = async (
       })
       .promise();
   } catch (err) {
+    console.error("Failed to send message:", err);
     if ((err as AWS.AWSError).statusCode === 410) {
       // Invalid connection, delete it
       await deleteConnection(connectionId);

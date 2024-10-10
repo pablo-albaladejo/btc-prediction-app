@@ -1,6 +1,7 @@
 export enum WebSocketAction {
   updatePrice = "updatePrice",
   updateLeaderboard = "updateLeaderboard",
+  requestLatestPrice = "requestLatestPrice",
 }
 
 export interface WebSocketMessageBase {
@@ -19,7 +20,14 @@ export interface UpdateLeaderboardMessage extends WebSocketMessageBase {
   leaderboard: Array<{ username: string; score: number }>;
 }
 
-export type WebSocketMessage = UpdatePriceMessage | UpdateLeaderboardMessage;
+export interface RequestLatestPriceMessage extends WebSocketMessageBase {
+  action: WebSocketAction.requestLatestPrice;
+}
+
+export type WebSocketMessage =
+  | UpdatePriceMessage
+  | UpdateLeaderboardMessage
+  | RequestLatestPriceMessage;
 
 export const createUpdatePriceMessage = (
   payload: MessagePayload<UpdatePriceMessage>,
@@ -38,3 +46,10 @@ export const createUpdateLeaderboardMessage = (
     ...payload,
   };
 };
+
+export const createRequestLatestPriceMessage =
+  (): RequestLatestPriceMessage => {
+    return {
+      action: WebSocketAction.requestLatestPrice,
+    };
+  };

@@ -1,8 +1,11 @@
 import { saveConnection } from "../services/connections";
 import WebSocketConnectEvent from "./webSocketConnectEvent.interface";
 
-exports.handler = async (event: WebSocketConnectEvent) => {
+export const handler = async (event: WebSocketConnectEvent) => {
   const connectionId = event.requestContext.connectionId;
+  if (!connectionId) {
+    return { statusCode: 400, body: "Invalid connection ID" };
+  }
 
   try {
     await saveConnection(connectionId);

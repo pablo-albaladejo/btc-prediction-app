@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import EventEmitter from 'eventemitter3';
+import { createRequestLatestPriceMessage } from '@my-org/shared';
 
 export const WebSocketContext = createContext<WebSocket | null>(null);
 
@@ -21,6 +22,8 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
 
       ws.onopen = () => {
         console.log('WebSocket connected');
+        const message = createRequestLatestPriceMessage();
+        ws.send(JSON.stringify(message));
       };
 
       ws.onclose = (event) => {

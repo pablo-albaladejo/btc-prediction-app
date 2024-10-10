@@ -2,10 +2,12 @@ import {
   UpdatePriceMessage,
   WebSocketAction,
   UpdateLeaderboardMessage,
+  WebSocketMessage,
+  RequestLatestPriceMessage,
 } from "./webSocketActions";
 
 export function isUpdatePriceMessage(
-  message: UpdatePriceMessage | UpdateLeaderboardMessage,
+  message: WebSocketMessage,
 ): message is UpdatePriceMessage {
   return (
     message &&
@@ -15,7 +17,7 @@ export function isUpdatePriceMessage(
 }
 
 export function isUpdateLeaderboardMessage(
-  message: UpdatePriceMessage | UpdateLeaderboardMessage,
+  message: WebSocketMessage,
 ): message is UpdateLeaderboardMessage {
   return (
     message &&
@@ -26,4 +28,10 @@ export function isUpdateLeaderboardMessage(
         typeof item.username === "string" && typeof item.score === "number",
     )
   );
+}
+
+export function isRequestLatestPriceMessage(
+  message: WebSocketMessage,
+): message is RequestLatestPriceMessage {
+  return message && message.action === WebSocketAction.requestLatestPrice;
 }
