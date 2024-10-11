@@ -4,6 +4,7 @@ import {
   UpdateLeaderboardMessage,
   WebSocketMessage,
   RequestLatestPriceMessage,
+  UpdateUserScoreMessage,
 } from "./webSocketActions";
 
 export function isUpdatePriceMessage(
@@ -34,4 +35,14 @@ export function isRequestLatestPriceMessage(
   message: WebSocketMessage,
 ): message is RequestLatestPriceMessage {
   return message && message.action === WebSocketAction.requestLatestPrice;
+}
+
+export function isUpdateUserScoreMessage(
+  message: WebSocketMessage,
+): message is UpdateUserScoreMessage {
+  return (
+    message &&
+    message.action === WebSocketAction.updateUserScore &&
+    typeof message.score === "number"
+  );
 }

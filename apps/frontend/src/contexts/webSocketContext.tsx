@@ -2,7 +2,10 @@ import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import EventEmitter from 'eventemitter3';
 import { getCurrentUser } from '@aws-amplify/auth';
 
-import { createRequestLatestPriceMessage } from '@my-org/shared';
+import {
+  createRequestLatestPriceMessage,
+  createRequestUserScoreMessage,
+} from '@my-org/shared';
 
 // TODO: Replace when localstack is available
 const websocketBaseUrl =
@@ -32,6 +35,12 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
 
         const requestLatestPriceMessage = createRequestLatestPriceMessage();
         ws.send(JSON.stringify(requestLatestPriceMessage));
+
+        const requestUserScoreMessage = createRequestUserScoreMessage({
+          userUUID: userId,
+        });
+        console.log('requestUserScoreMessage', requestUserScoreMessage);
+        ws.send(JSON.stringify(requestUserScoreMessage));
       };
 
       ws.onclose = (event) => {

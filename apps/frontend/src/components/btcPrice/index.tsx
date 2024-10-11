@@ -8,8 +8,8 @@ function BTCPrice() {
 
   const handlePriceUpdate = useCallback((message: MessageEvent) => {
     const data = JSON.parse(message.data);
-    console.log('Received message:', data);
     if (isUpdatePriceMessage(data)) {
+      console.log('Received message at BTCPrice:', data);
       setBTCPrice(data.price);
     }
   }, []);

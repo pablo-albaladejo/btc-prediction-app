@@ -4,6 +4,7 @@ import { ConnectionHandling } from './connectionHandling';
 import { PriceBroadcasting } from './priceBroadcasting';
 import { WebSocketApi } from './webSocketApi';
 import { Policies } from './policies';
+import { UserScore } from './userScore';
 
 export class ApiWebsocket extends Construct {
   webSocketApiEndpoint: string;
@@ -29,9 +30,18 @@ export class ApiWebsocket extends Construct {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
+    const userScore = new UserScore(this, 'UserScore', {
+      webSocketApi: webSocketApiConstruct.webSocketApi,
+      webSocketApiEndpoint: this.webSocketApiEndpoint,
+      connectionsTable: connectionHandling.connectionsTable,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+
     new Policies(this, 'Policies', {
       broadcastPriceLambda: priceBroadcasting.broadcastPriceLambda,
       requestLatestPriceLambda: priceBroadcasting.requestLatestPriceLambda,
+      requestUserScoreLambda: userScore.requestUserScoreLambda,
+      updateUserScoreLambda: userScore.updateUserScoreLambda,
       webSocketApiId: webSocketApiConstruct.webSocketApi.apiId,
       webSocketStageName: webSocketApiConstruct.webSocketStage.stageName,
     });

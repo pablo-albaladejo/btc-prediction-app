@@ -8,6 +8,7 @@ import {
 } from '@aws-amplify/ui-react';
 import Prediction from '../../components/prediction';
 import BTCPrice from '../../components/btcPrice';
+import UserScore from '../../components/userScore';
 
 const Home = () => {
   const { user, signOut } = useAuthenticator((context) => [context.user]);
@@ -30,6 +31,7 @@ const Home = () => {
 
         <Heading level={3}>Welcome {user.username}</Heading>
 
+        <UserScore />
         <Prediction />
 
         <Button variation="destructive" onClick={signOut}>
