@@ -56,7 +56,6 @@ jobs:
             echo "Error: WebSocketApiEndpoint not found in $FILE_PATH"
             exit 1
           else
-            echo "The value of WebSocketApiEndpoint is: $websocket_api_endpoint"
             echo "WEBSOCKET_API_ENDPOINT=$websocket_api_endpoint" >> $GITHUB_ENV
           fi
 
@@ -64,7 +63,6 @@ jobs:
         id: get-aws-region
         run: |
           aws_region="eu-west-1"
-          echo "The value of AWS Region is: $aws_region"
           echo "AWS_REGION=$aws_region" >> $GITHUB_ENV
 
       - name: Get User Pool ID
@@ -76,7 +74,6 @@ jobs:
             echo "Error: UserPoolId not found in $FILE_PATH"
             exit 1
           else
-            echo "The value of UserPoolId is: $user_pool_id"
             echo "USER_POOL_ID=$user_pool_id" >> $GITHUB_ENV
           fi
 
@@ -89,7 +86,6 @@ jobs:
             echo "Error: UserPoolClientId not found in $FILE_PATH"
             exit 1
           else
-            echo "The value of UserPoolClientId is: $user_pool_client_id"
             echo "USER_POOL_CLIENT_ID=$user_pool_client_id" >> $GITHUB_ENV
           fi
 
@@ -102,7 +98,6 @@ jobs:
             echo "Error: IdentityPoolId not found in $FILE_PATH"
             exit 1
           else
-            echo "The value of IdentityPoolId is: $identity_pool_id"
             echo "IDENTITY_POOL_ID=$identity_pool_id" >> $GITHUB_ENV
           fi
       
