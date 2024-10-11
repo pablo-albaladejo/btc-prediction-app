@@ -32,31 +32,45 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-west-1
 
-      - name: Detect changes
-        id: changes
+      - name: Build shared package
         run: |
-          if git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -q '^apps/frontend/'; then
-            echo "frontend=true" >> $GITHUB_ENV
+          cd packages/shared
+          npm run build
+          cd ../..
+
+      - name: Deploy BackendStack
+        run: |
+          cd infra
+          npx cdk deploy BackendStack --require-approval never --outputs-file backend-output.json
+          cd ..
+      
+      - name: Get WebSocketApiEndpoint
+        id: get-websocket-api-endpoint
+        run: |
+          FILE_PATH="./infra/backend-output.json"
+          websocket_api_endpoint=$(jq -r '.BackendStack.WebSocketApiEndpoint' "$FILE_PATH")
+          if [ -z "$websocket_api_endpoint" ]; then
+            echo "Error: WebSocketApiEndpoint not found in $FILE_PATH"
+            exit 1
+          else
+            echo "The value of WebSocketApiEndpoint is: $websocket_api_endpoint"
+            echo "WEBSOCKET_API_ENDPOINT=$websocket_api_endpoint" >> $GITHUB_ENV
           fi
-          if git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -q '^apps/backend/'; then
-            echo "backend=true" >> $GITHUB_ENV
-          fi
-          if git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -q '^infra/'; then
-            echo "infra=true" >> $GITHUB_ENV
-          fi
+      
+      - name: Build frontend
+        run: |
+          cd apps/frontend
+          REACT_APP_WEBSOCKET_API_ENDPOINT=${{ env.WEBSOCKET_API_ENDPOINT }} npm run build
+          cd ../..
 
-      - name: Build Frontend
-        if: env.frontend == 'true' || env.infra == 'true'
-        run: cd apps/frontend && npm run build
+      - name: Deploy FrontendStack
+        run: |
+          cd infra
+          npx cdk deploy FrontendStack --require-approval never --outputs-file frontend-output.json
+          cd ..
 
-      - name: Deploy Frontend Stack
-        if: env.frontend == 'true' || env.infra == 'true'
-        run: cd infra && npx cdk deploy FrontendStack --require-approval never
-
-      - name: Build Backend
-        if: env.backend == 'true' || env.infra == 'true'
-        run: cd apps/backend && npm run build
-
-      - name: Deploy Backend Stack
-        if: env.backend == 'true' || env.infra == 'true'
-        run: cd infra && npx cdk deploy BackendStack --require-approval never
+      - name: Get WebsiteURL
+        run: |
+          FILE_PATH="./infra/frontend-output.json"
+          website_url=$(jq -r '.FrontendStack.WebsiteURL' "$FILE_PATH")
+          echo "The value of WebsiteURL is: $website_url"

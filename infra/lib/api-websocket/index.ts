@@ -11,6 +11,8 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as path from 'path';
 
 export class ApiWebsocket extends Construct {
+  webSocketApiEndpoint: string;
+
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
@@ -21,6 +23,7 @@ export class ApiWebsocket extends Construct {
       },
       tableName: 'WebSocketConnections',
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
     const priceTable = new dynamodb.Table(this, 'PriceTable', {
@@ -30,6 +33,7 @@ export class ApiWebsocket extends Construct {
       },
       tableName: 'LatestBTCPrice',
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
     const connectHandler = new lambdaNodejs.NodejsFunction(
@@ -139,16 +143,16 @@ export class ApiWebsocket extends Construct {
       },
     );
 
-    const webSocketApiEndpoint = `${webSocketApi.apiEndpoint}/${webSocketStage.stageName}`;
+    this.webSocketApiEndpoint = `${webSocketApi.apiEndpoint}/${webSocketStage.stageName}`;
 
     broadcastPriceLambda.addEnvironment(
       'WEBSOCKET_API_ENDPOINT',
-      webSocketApiEndpoint,
+      this.webSocketApiEndpoint,
     );
 
     requestLatestPriceLambda.addEnvironment(
       'WEBSOCKET_API_ENDPOINT',
-      webSocketApiEndpoint,
+      this.webSocketApiEndpoint,
     );
 
     const policy = new iam.PolicyStatement({

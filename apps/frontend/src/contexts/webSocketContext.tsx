@@ -2,6 +2,10 @@ import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import EventEmitter from 'eventemitter3';
 import { createRequestLatestPriceMessage } from '@my-org/shared';
 
+// TODO: Replace when localstack is available
+const websocketUrl =
+  process.env.REACT_APP_WEBSOCKET_API_ENDPOINT || 'wss://localhost:3001';
+
 export const WebSocketContext = createContext<WebSocket | null>(null);
 
 interface WebSocketProviderProps {
@@ -16,9 +20,7 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
     let ws: WebSocket;
 
     const connect = () => {
-      ws = new WebSocket(
-        'wss://ey5n78m4mf.execute-api.eu-west-1.amazonaws.com/prod',
-      );
+      ws = new WebSocket(websocketUrl);
 
       ws.onopen = () => {
         console.log('WebSocket connected');
