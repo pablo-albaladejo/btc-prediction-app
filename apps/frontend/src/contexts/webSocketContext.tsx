@@ -1,9 +1,11 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import EventEmitter from 'eventemitter3';
+import { getCurrentUser } from '@aws-amplify/auth';
+
 import { createRequestLatestPriceMessage } from '@my-org/shared';
 
 // TODO: Replace when localstack is available
-const websocketUrl =
+const websocketBaseUrl =
   process.env.REACT_APP_WEBSOCKET_API_ENDPOINT || 'wss://localhost:3001';
 
 export const WebSocketContext = createContext<WebSocket | null>(null);
@@ -19,13 +21,17 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
   useEffect(() => {
     let ws: WebSocket;
 
-    const connect = () => {
+    const connect = async () => {
+      const { userId } = await getCurrentUser();
+
+      const websocketUrl = `${websocketBaseUrl}?userUUID=${encodeURIComponent(userId)}`;
       ws = new WebSocket(websocketUrl);
 
       ws.onopen = () => {
         console.log('WebSocket connected');
-        const message = createRequestLatestPriceMessage();
-        ws.send(JSON.stringify(message));
+
+        const requestLatestPriceMessage = createRequestLatestPriceMessage();
+        ws.send(JSON.stringify(requestLatestPriceMessage));
       };
 
       ws.onclose = (event) => {
@@ -59,7 +65,7 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
 
   return (
     <WebSocketContext.Provider value={socket}>
-      <div data-testid="web-socket-provider">{children}</div>
+      {children}
     </WebSocketContext.Provider>
   );
 };

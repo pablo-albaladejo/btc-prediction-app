@@ -31,6 +31,14 @@ export class ConnectionHandling extends Construct {
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
       removalPolicy: removalPolicy,
     });
+    this.connectionsTable.addGlobalSecondaryIndex({
+      indexName: 'UserUUIDIndex',
+      partitionKey: {
+        name: 'userUUID',
+        type: dynamodb.AttributeType.STRING,
+      },
+      projectionType: dynamodb.ProjectionType.ALL,
+    });
 
     this.connectHandler = new lambdaNodejs.NodejsFunction(
       this,
