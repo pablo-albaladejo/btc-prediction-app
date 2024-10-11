@@ -70,6 +70,7 @@ jobs:
       - name: Get User Pool ID
         id: get-user-pool-id
         run: |
+          FILE_PATH="./infra/backend-output.json"
           user_pool_id=$(jq -r '.BackendStack.UserPoolId' "$FILE_PATH")
           if [ -z "$user_pool_id" ]; then
             echo "Error: UserPoolId not found in $FILE_PATH"
@@ -82,6 +83,7 @@ jobs:
       - name: Get User Pool Client ID
         id: get-user-pool-client-id
         run: |
+          FILE_PATH="./infra/backend-output.json"  
           user_pool_client_id=$(jq -r '.BackendStack.UserPoolClientId' "$FILE_PATH")
           if [ -z "$user_pool_client_id" ]; then
             echo "Error: UserPoolClientId not found in $FILE_PATH"
@@ -94,6 +96,7 @@ jobs:
       - name: Get Identity Pool ID
         id: get-identity-pool-id
         run: |
+          FILE_PATH="./infra/backend-output.json"  
           identity_pool_id=$(jq -r '.BackendStack.IdentityPoolId' "$FILE_PATH")
           if [ -z "$identity_pool_id" ]; then
             echo "Error: IdentityPoolId not found in $FILE_PATH"
