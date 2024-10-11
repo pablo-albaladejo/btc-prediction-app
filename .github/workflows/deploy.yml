@@ -59,11 +59,59 @@ jobs:
             echo "The value of WebSocketApiEndpoint is: $websocket_api_endpoint"
             echo "WEBSOCKET_API_ENDPOINT=$websocket_api_endpoint" >> $GITHUB_ENV
           fi
+
+      - name: Get AWS Region
+        id: get-aws-region
+        run: |
+          aws_region="eu-west-1"
+          echo "The value of AWS Region is: $aws_region"
+          echo "AWS_REGION=$aws_region" >> $GITHUB_ENV
+
+      - name: Get User Pool ID
+        id: get-user-pool-id
+        run: |
+          user_pool_id=$(jq -r '.BackendStack.UserPoolId' "$FILE_PATH")
+          if [ -z "$user_pool_id" ]; then
+            echo "Error: UserPoolId not found in $FILE_PATH"
+            exit 1
+          else
+            echo "The value of UserPoolId is: $user_pool_id"
+            echo "USER_POOL_ID=$user_pool_id" >> $GITHUB_ENV
+          fi
+
+      - name: Get User Pool Client ID
+        id: get-user-pool-client-id
+        run: |
+          user_pool_client_id=$(jq -r '.BackendStack.UserPoolClientId' "$FILE_PATH")
+          if [ -z "$user_pool_client_id" ]; then
+            echo "Error: UserPoolClientId not found in $FILE_PATH"
+            exit 1
+          else
+            echo "The value of UserPoolClientId is: $user_pool_client_id"
+            echo "USER_POOL_CLIENT_ID=$user_pool_client_id" >> $GITHUB_ENV
+          fi
+
+      - name: Get Identity Pool ID
+        id: get-identity-pool-id
+        run: |
+          identity_pool_id=$(jq -r '.BackendStack.IdentityPoolId' "$FILE_PATH")
+          if [ -z "$identity_pool_id" ]; then
+            echo "Error: IdentityPoolId not found in $FILE_PATH"
+            exit 1
+          else
+            echo "The value of IdentityPoolId is: $identity_pool_id"
+            echo "IDENTITY_POOL_ID=$identity_pool_id" >> $GITHUB_ENV
+          fi
       
       - name: Build frontend
         run: |
           cd apps/frontend
-          REACT_APP_WEBSOCKET_API_ENDPOINT=${{ env.WEBSOCKET_API_ENDPOINT }} npm run build
+          REACT_APP_WEBSOCKET_API_ENDPOINT=${{ env.WEBSOCKET_API_ENDPOINT }} \
+          REACT_APP_AWS_REGION=${{ env.AWS_REGION }} \
+          REACT_APP_USER_POOL_ID=${{ env.USER_POOL_ID }} \
+          REACT_APP_USER_POOL_CLIENT_ID=${{ env.USER_POOL_CLIENT_ID }} \
+          REACT_APP_IDENTITY_POOL_ID=${{ env.IDENTITY_POOL_ID }} \
+          npm run build
           cd ../..
 
       - name: Deploy FrontendStack

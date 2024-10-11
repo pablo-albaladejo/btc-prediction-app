@@ -13,6 +13,7 @@
     "test": "turbo run test",
     "deploy": "sh scripts/deploy.sh",
     "destroy": "sh scripts/destroy.sh",
+    "env": "sh scripts/generateLocalEnv.sh",
     "prepare": "husky"
   },
   "keywords": [
