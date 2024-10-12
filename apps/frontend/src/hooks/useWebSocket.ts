@@ -1,5 +1,5 @@
 import { useContext, useEffect } from 'react';
-import { WebSocketContext } from '../contexts/webSocketContext';
+import { WebSocketContext } from '../contexts';
 
 type OnMessageHandler = (event: MessageEvent) => void;
 

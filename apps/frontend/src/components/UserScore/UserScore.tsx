@@ -1,20 +1,9 @@
-import React, { useState, useCallback } from 'react';
-import { useWebSocket } from '../../hooks/useWebSocket';
-import { isUpdateUserScoreMessage } from '@my-org/shared';
+import React from 'react';
 import { Heading } from '@aws-amplify/ui-react';
+import { useScore } from '../../hooks';
 
 function UserScore() {
-  const [score, setScore] = useState<number | null>(null);
-
-  const handleScoreUpdate = useCallback((message: MessageEvent) => {
-    const data = JSON.parse(message.data);
-    if (isUpdateUserScoreMessage(data)) {
-      console.log('Received message at UserScore:', data);
-      setScore(data.score);
-    }
-  }, []);
-
-  useWebSocket(handleScoreUpdate);
+  const score = useScore();
 
   return (
     <Heading level={1}>
