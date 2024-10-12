@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { useWebSocket } from '../../hooks/useWebSocket';
 import { isUpdatePriceMessage } from '@my-org/shared';
-import { Heading } from '@aws-amplify/ui-react';
+import { Text } from '@aws-amplify/ui-react';
 
 function BTCPrice() {
   const [btcPrice, setBTCPrice] = useState<number | null>(null);
@@ -17,9 +17,9 @@ function BTCPrice() {
   useWebSocket(handlePriceUpdate);
 
   return (
-    <Heading level={1}>
+    <Text className="btc-price-text">
       BTC: {btcPrice !== null ? `$${btcPrice}` : 'Loading...'}
-    </Heading>
+    </Text>
   );
 }
 

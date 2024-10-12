@@ -25,42 +25,48 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
     let ws: WebSocket;
 
     const connect = async () => {
-      const { userId } = await getCurrentUser();
+      try {
+        const { userId } = await getCurrentUser();
 
-      const websocketUrl = `${websocketBaseUrl}?userUUID=${encodeURIComponent(userId)}`;
-      ws = new WebSocket(websocketUrl);
+        const websocketUrl = `${websocketBaseUrl}?userUUID=${encodeURIComponent(userId)}`;
+        ws = new WebSocket(websocketUrl);
 
-      ws.onopen = () => {
-        console.log('WebSocket connected');
+        ws.onopen = () => {
+          console.log('WebSocket connected');
 
-        const requestLatestPriceMessage = createRequestLatestPriceMessage();
-        ws.send(JSON.stringify(requestLatestPriceMessage));
+          const requestLatestPriceMessage = createRequestLatestPriceMessage();
+          ws.send(JSON.stringify(requestLatestPriceMessage));
 
-        const requestUserScoreMessage = createRequestUserScoreMessage({
-          userUUID: userId,
-        });
-        console.log('requestUserScoreMessage', requestUserScoreMessage);
-        ws.send(JSON.stringify(requestUserScoreMessage));
-      };
+          const requestUserScoreMessage = createRequestUserScoreMessage({
+            userUUID: userId,
+          });
+          console.log('requestUserScoreMessage', requestUserScoreMessage);
+          ws.send(JSON.stringify(requestUserScoreMessage));
+        };
 
-      ws.onclose = (event) => {
-        console.log('WebSocket disconnected', event);
-        setTimeout(() => {
-          connect();
-        }, 1000);
-      };
+        ws.onclose = (event) => {
+          console.log('WebSocket disconnected', event);
+          setTimeout(() => {
+            connect();
+          }, 1000);
+        };
 
-      ws.onerror = (error) => {
-        console.error('WebSocket error:', error);
-        ws.close();
-      };
+        ws.onerror = (error) => {
+          console.error('WebSocket error:', error);
+          ws.close();
+        };
 
-      ws.onmessage = (event) => {
-        const message = JSON.parse(event.data);
-        emitter.emit(message.action, message);
-      };
+        ws.onmessage = (event) => {
+          const message = JSON.parse(event.data);
+          emitter.emit(message.action, message);
+        };
 
-      setSocket(ws);
+        setSocket(ws);
+      } catch {
+        if (ws && ws.readyState === WebSocket.OPEN) {
+          ws.close();
+        }
+      }
     };
 
     connect();
