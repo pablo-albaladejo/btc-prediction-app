@@ -5,9 +5,13 @@ import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 import * as cloudfront_origins from 'aws-cdk-lib/aws-cloudfront-origins';
 import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
 
+interface StaticSiteProps {
+  assetsFolder: string;
+}
+
 export class StaticSite extends Construct {
   public readonly distribution: cloudfront.Distribution;
-  constructor(scope: Construct, id: string) {
+  constructor(scope: Construct, id: string, props: StaticSiteProps) {
     super(scope, id);
 
     const websiteBucket = new s3.Bucket(this, 'WebsiteBucket', {
@@ -38,7 +42,7 @@ export class StaticSite extends Construct {
     );
 
     new s3deploy.BucketDeployment(this, 'DeployWebsite', {
-      sources: [s3deploy.Source.asset('../apps/frontend/build')],
+      sources: [s3deploy.Source.asset(props.assetsFolder)],
       destinationBucket: websiteBucket,
       distribution: this.distribution,
       distributionPaths: ['/*'],

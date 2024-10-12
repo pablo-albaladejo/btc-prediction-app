@@ -6,10 +6,20 @@ export class FrontendStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const staticSite = new StaticSite(this, 'StaticSite');
+    const staticSite = new StaticSite(this, 'StaticSite', {
+      assetsFolder: '../apps/frontend/build',
+    });
 
     new cdk.CfnOutput(this, 'WebsiteURL', {
       value: staticSite.distribution.distributionDomainName,
+    });
+
+    const storybookSite = new StaticSite(this, 'StorybookSite', {
+      assetsFolder: '../apps/frontend/storybook-static',
+    });
+
+    new cdk.CfnOutput(this, 'StorybookURL', {
+      value: storybookSite.distribution.distributionDomainName,
     });
   }
 }
