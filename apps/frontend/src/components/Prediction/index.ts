@@ -1,1 +1,1 @@
-export { default } from './Prediction';
+export { default } from './PredictionContainer';

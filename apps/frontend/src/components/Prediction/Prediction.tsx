@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { ButtonGroup } from '@aws-amplify/ui-react';
+import React from 'react';
 import {
   PredictionContainer,
   PredictionText,
@@ -7,17 +6,15 @@ import {
   CustomButton,
 } from './Prediction.styles';
 
-const Prediction = () => {
-  const [hasPendingPrediction] = useState(false);
+interface PredictionProps {
+  hasPendingPrediction: boolean;
+  onPrediction: (direction: string) => void;
+}
 
-  const handlePrediction = async (direction: string) => {
-    try {
-      console.log('Prediction submitted:', direction);
-    } catch (error) {
-      console.error('Error submitting prediction:', error);
-    }
-  };
-
+const Prediction = ({
+  hasPendingPrediction,
+  onPrediction,
+}: PredictionProps) => {
   return (
     <PredictionContainer>
       {hasPendingPrediction ? (
@@ -27,14 +24,8 @@ const Prediction = () => {
       ) : (
         <>
           <PredictionText>Make your prediction:</PredictionText>
-          <ButtonGroup>
-            <CustomButton onClick={() => handlePrediction('up')}>
-              Up
-            </CustomButton>
-            <CustomButton onClick={() => handlePrediction('down')}>
-              Down
-            </CustomButton>
-          </ButtonGroup>
+          <CustomButton onClick={() => onPrediction('up')}>Up</CustomButton>
+          <CustomButton onClick={() => onPrediction('down')}>Down</CustomButton>
         </>
       )}
     </PredictionContainer>

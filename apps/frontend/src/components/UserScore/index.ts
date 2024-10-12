@@ -1,1 +1,1 @@
-export { default } from './UserScore';
+export { default } from './UserScoreContainer';

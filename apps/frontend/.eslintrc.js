@@ -1,10 +1,6 @@
 module.exports = {
   root: true,
-  extends: [
-    '@my-org/eslint-config',
-    'plugin:react/recommended',
-    'plugin:react-hooks/recommended',
-  ],
+  extends: ['@my-org/eslint-config', 'plugin:react/recommended', 'plugin:react-hooks/recommended', 'plugin:storybook/recommended'],
   parserOptions: {
     ecmaFeatures: {
       jsx: true,

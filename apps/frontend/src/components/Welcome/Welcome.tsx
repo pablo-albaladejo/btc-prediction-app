@@ -1,11 +1,12 @@
 import React from 'react';
-import { useAuthenticator } from '@aws-amplify/ui-react';
 import { WelcomeHeading } from './Welcome.styles';
 
-export const Welcome = () => {
-  const username = useAuthenticator().user.username;
+interface WelcomeProps {
+  username: string;
+}
 
-  return <WelcomeHeading>Welcome, {`${username}`}</WelcomeHeading>;
+const Welcome = ({ username }: WelcomeProps) => {
+  return <WelcomeHeading>Welcome, {username}</WelcomeHeading>;
 };
 
 export default Welcome;

@@ -1,1 +1,1 @@
-export { default } from './BTCPrice';
+export { default } from './BTCPriceContainer';

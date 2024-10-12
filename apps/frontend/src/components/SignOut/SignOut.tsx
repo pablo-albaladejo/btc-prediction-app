@@ -1,13 +1,13 @@
 import React from 'react';
-import { Button, useAuthenticator } from '@aws-amplify/ui-react';
+import { CustomSignOutButton } from './SignOut.styles';
 
-const SignOut = () => {
-  const { signOut } = useAuthenticator();
+interface SignOutProps {
+  onSignOut: () => void;
+}
 
+const SignOut = ({ onSignOut }: SignOutProps) => {
   return (
-    <Button variation="destructive" onClick={signOut}>
-      Sign Out
-    </Button>
+    <CustomSignOutButton onClick={onSignOut}>Sign Out</CustomSignOutButton>
   );
 };
 
