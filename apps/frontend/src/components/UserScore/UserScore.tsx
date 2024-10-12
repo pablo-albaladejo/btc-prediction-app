@@ -1,14 +1,12 @@
 import React from 'react';
-import { Heading } from '@aws-amplify/ui-react';
 import { useScore } from '../../hooks';
+import { ScoreText } from './UserScore.styles';
 
 function UserScore() {
   const score = useScore();
 
   return (
-    <Heading level={1}>
-      Your Score: {score !== null ? score : 'Loading...'}
-    </Heading>
+    <ScoreText>Your Score: {score !== null ? score : 'Loading...'}</ScoreText>
   );
 }
 

@@ -1,11 +1,15 @@
 import React from 'react';
-import { Text } from '@aws-amplify/ui-react';
+import { BTCPriceText } from './BTCPrice.styles';
 import { useBTCPrice } from '../../hooks';
 
 function BTCPrice() {
   const btcPrice = useBTCPrice();
 
-  return <Text>BTC: {btcPrice !== null ? `$${btcPrice}` : 'Loading...'}</Text>;
+  return (
+    <BTCPriceText>
+      BTC: {btcPrice !== null ? `$${btcPrice}` : 'Loading...'}
+    </BTCPriceText>
+  );
 }
 
 export default BTCPrice;
