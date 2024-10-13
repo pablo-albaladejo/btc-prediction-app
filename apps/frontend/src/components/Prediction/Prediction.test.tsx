@@ -30,7 +30,7 @@ test('renders the pending state when prediction is pending', () => {
 
   expect(
     screen.getByText(
-      'You have a pending prediction: up. Please wait for it to be resolved.'
+      'You have a pending prediction: up. Please wait for it to be resolved.',
     ),
   ).toBeInTheDocument();
 

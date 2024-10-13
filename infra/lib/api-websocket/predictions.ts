@@ -43,11 +43,14 @@ export class Predictions extends Construct {
         ),
         environment: {
           PREDICTIONS_TABLE: this.predictionsTable.tableName,
+          CONNECTIONS_TABLE: props.connectionsTable.tableName,
+          WEBSOCKET_API_ENDPOINT: props.webSocketApiEndpoint,
         },
       },
     );
 
     this.predictionsTable.grantReadWriteData(this.submitPredictionLambda);
+    props.connectionsTable.grantReadData(this.submitPredictionLambda);
 
     props.webSocketApi.addRoute('submitPrediction', {
       integration: new apigatewayv2integrations.WebSocketLambdaIntegration(
