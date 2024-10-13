@@ -55,7 +55,8 @@ export const isSubmitPredictionMessage = (
 ): message is SubmitPredictionMessage => {
   return (
     message.action === WebSocketAction.submitPrediction &&
-    Object.values(PredictionDirection).includes(message.prediction)
+    Object.values(PredictionDirection).includes(message.direction) &&
+    typeof message.price === "number"
   );
 };
 
@@ -64,6 +65,6 @@ export const isUpdatePredictionMessage = (
 ): message is UpdatePredictionMessage => {
   return (
     message.action === WebSocketAction.updatePrediction &&
-    Object.values(PredictionDirection).includes(message.prediction)
+    Object.values(PredictionDirection).includes(message.direction)
   );
 };

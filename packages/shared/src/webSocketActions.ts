@@ -43,12 +43,13 @@ export interface UpdateUserScoreMessage extends WebSocketMessageBase {
 
 export interface UpdatePredictionMessage extends WebSocketMessageBase {
   action: WebSocketAction.updatePrediction;
-  prediction: PredictionDirection;
+  direction: PredictionDirection;
 }
 
 export interface SubmitPredictionMessage extends WebSocketMessageBase {
   action: WebSocketAction.submitPrediction;
-  prediction: PredictionDirection;
+  direction: PredictionDirection;
+  price: number;
   userUUID: string;
 }
 

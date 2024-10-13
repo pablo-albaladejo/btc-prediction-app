@@ -14,9 +14,9 @@ export const handler = async (event: APIGatewayEvent) => {
   }
 
   try {
-    const prediction = await getPrediction(userUUID);
+    const direction = await getPrediction(userUUID);
     const message = createUpdatePredictionMessage({
-      prediction,
+      direction,
     });
 
     await sendMessage(connectionId, JSON.stringify(message));

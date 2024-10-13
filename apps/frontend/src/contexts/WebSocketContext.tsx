@@ -17,7 +17,7 @@ const websocketBaseUrl =
 interface WebSocketState {
   btcPrice: number | null;
   score: number | null;
-  prediction: PredictionDirection | null;
+  direction: PredictionDirection | null;
   sendMessage: (message: string) => void;
   clearPrediction: () => void;
 }
@@ -25,7 +25,7 @@ interface WebSocketState {
 const initialState: WebSocketState = {
   btcPrice: null,
   score: null,
-  prediction: null,
+  direction: null,
   sendMessage: () => {},
   clearPrediction: () => {},
 };
@@ -72,7 +72,7 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
             clearPrediction: () => {
               setState((prevState) => ({
                 ...prevState,
-                prediction: null,
+                direction: null,
               }));
             },
           }));
@@ -101,7 +101,7 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
           } else if (isUpdatePredictionMessage(message)) {
             setState((prevState) => ({
               ...prevState,
-              prediction: message.prediction,
+              direction: message.direction,
             }));
           }
         };

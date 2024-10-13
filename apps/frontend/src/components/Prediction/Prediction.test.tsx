@@ -9,7 +9,7 @@ test('renders the default state when no prediction is pending', () => {
 
   renderWithTheme(
     <Prediction
-      prediction={PredictionDirection.NONE}
+      direction={PredictionDirection.NONE}
       onPrediction={mockOnPrediction}
     />,
   );
@@ -25,7 +25,7 @@ test('renders the default state when no prediction is pending', () => {
 
 test('renders the pending state when prediction is pending', () => {
   renderWithTheme(
-    <Prediction prediction={PredictionDirection.Up} onPrediction={vi.fn()} />,
+    <Prediction direction={PredictionDirection.Up} onPrediction={vi.fn()} />,
   );
 
   expect(

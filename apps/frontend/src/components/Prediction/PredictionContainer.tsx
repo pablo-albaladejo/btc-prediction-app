@@ -8,20 +8,24 @@ import {
 import { getCurrentUser } from '@aws-amplify/auth';
 
 const PredictionContainer = () => {
-  const { prediction, sendMessage, clearPrediction } =
+  const { direction, btcPrice, sendMessage, clearPrediction } =
     useContext(WebSocketContext);
 
   const handlePrediction = async (direction: PredictionDirection) => {
     const userId = (await getCurrentUser()).userId;
-    const message = createSubmitPredictionMessage({
-      prediction: direction,
-      userUUID: userId,
-    });
-    sendMessage(JSON.stringify(message));
-    clearPrediction();
+
+    if (direction && btcPrice && userId) {
+      const message = createSubmitPredictionMessage({
+        direction,
+        userUUID: userId,
+        price: btcPrice,
+      });
+      sendMessage(JSON.stringify(message));
+      clearPrediction();
+    }
   };
 
-  return <Prediction prediction={prediction} onPrediction={handlePrediction} />;
+  return <Prediction direction={direction} onPrediction={handlePrediction} />;
 };
 
 export default PredictionContainer;

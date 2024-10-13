@@ -9,10 +9,9 @@ export const handler = async (event: APIGatewayEvent) => {
   const connectionId = event.requestContext.connectionId;
   const body = JSON.parse(event.body || "{}");
 
-  const userUUID = body.userUUID;
-  const prediction = body.prediction;
+  const { userUUID, direction, price } = body;
 
-  if (!connectionId || !userUUID || !body.prediction) {
+  if (!connectionId || !userUUID || !direction || !price) {
     return createErrorResponse(
       "Invalid connection ID or user UUID or Body",
       400,
@@ -22,12 +21,12 @@ export const handler = async (event: APIGatewayEvent) => {
   const timestamp = Date.now();
 
   try {
-    await savePrediction(userUUID, timestamp, prediction);
+    await savePrediction(userUUID, timestamp, direction, price);
 
     //TODO: Use DynamoDB streams to broadcast the message
     const connections = await getAllConnectionsByUUID(userUUID);
     const message = createUpdatePredictionMessage({
-      prediction,
+      direction,
     });
     const dataToSend = JSON.stringify(message);
     await broadcastMessage(connections, dataToSend);

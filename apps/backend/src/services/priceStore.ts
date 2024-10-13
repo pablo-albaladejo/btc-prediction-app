@@ -2,62 +2,18 @@ import { dynamoDB } from "../utils/awsClients";
 
 const PRICE_TABLE = process.env.PRICE_TABLE!;
 const LATEST_PRICE_ITEM_KEY = { id: "latest" };
-const PREVIOUS_PRICE_ITEM_KEY = { id: "previous" };
 
 export const saveLatestPrice = async (price: number): Promise<void> => {
   try {
-    const currentPriceData = await dynamoDB
-      .get({
-        TableName: PRICE_TABLE,
-        Key: LATEST_PRICE_ITEM_KEY,
-      })
-      .promise();
-
-    const currentPrice = currentPriceData.Item?.price || null;
-
-    if (currentPrice === null) {
-      const initialPriceParams = [
-        {
-          TableName: PRICE_TABLE,
-          Item: {
-            ...PREVIOUS_PRICE_ITEM_KEY,
-            price,
-            timestamp: Date.now(),
-          },
-        },
-        {
-          TableName: PRICE_TABLE,
-          Item: {
-            ...LATEST_PRICE_ITEM_KEY,
-            price,
-            timestamp: Date.now(),
-          },
-        },
-      ];
-      await Promise.all(
-        initialPriceParams.map((params) => dynamoDB.put(params).promise()),
-      );
-    } else {
-      const previousPriceParams = {
-        TableName: PRICE_TABLE,
-        Item: {
-          ...PREVIOUS_PRICE_ITEM_KEY,
-          price: currentPrice,
-          timestamp: currentPriceData.Item?.timestamp || Date.now(),
-        },
-      };
-      await dynamoDB.put(previousPriceParams).promise();
-
-      const latestPriceParams = {
-        TableName: PRICE_TABLE,
-        Item: {
-          ...LATEST_PRICE_ITEM_KEY,
-          price,
-          timestamp: Date.now(),
-        },
-      };
-      await dynamoDB.put(latestPriceParams).promise();
-    }
+    const latestPriceParams = {
+      TableName: PRICE_TABLE,
+      Item: {
+        ...LATEST_PRICE_ITEM_KEY,
+        price,
+        timestamp: Date.now(),
+      },
+    };
+    await dynamoDB.put(latestPriceParams).promise();
   } catch {
     throw new Error("Error saving latest price");
   }
@@ -74,19 +30,5 @@ export const getLatestPrice = async (): Promise<number | null> => {
     return result.Item ? result.Item.price : null;
   } catch {
     throw new Error("Error getting latest price");
-  }
-};
-
-export const getPreviousPrice = async (): Promise<number | null> => {
-  const params = {
-    TableName: PRICE_TABLE,
-    Key: PREVIOUS_PRICE_ITEM_KEY,
-  };
-
-  try {
-    const result = await dynamoDB.get(params).promise();
-    return result.Item ? result.Item.price : null;
-  } catch {
-    throw new Error("Error getting previous price");
   }
 };

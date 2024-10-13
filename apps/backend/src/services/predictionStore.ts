@@ -6,7 +6,8 @@ const PREDICTIONS_TABLE = process.env.PREDICTIONS_TABLE!;
 export const savePrediction = async (
   userUUID: string,
   timestamp: number,
-  prediction: string,
+  direction: PredictionDirection,
+  price: number,
 ) => {
   await dynamoDB
     .put({
@@ -14,7 +15,8 @@ export const savePrediction = async (
       Item: {
         userUUID,
         timestamp,
-        prediction,
+        direction,
+        price,
         status: "pending",
       },
     })
