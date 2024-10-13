@@ -1,9 +1,8 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import UserScore from './UserScore';
-import { useScore } from '../../hooks';
-
+import { WebSocketContext } from '../../contexts';
 const UserScoreContainer = () => {
-  const score = useScore();
+  const { score } = useContext(WebSocketContext);
 
   return <UserScore score={score} />;
 };

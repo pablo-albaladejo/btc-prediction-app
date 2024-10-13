@@ -9,8 +9,8 @@ export const handler = async () => {
     const currentPrice = await getCurrentBTCPrice();
     await saveLatestPrice(currentPrice);
 
+    //TODO: Use DynamoDB streams to broadcast the message
     const connections = await getAllConnections();
-
     const postData = createUpdatePriceMessage({ price: currentPrice });
     const dataToSend = JSON.stringify(postData);
 

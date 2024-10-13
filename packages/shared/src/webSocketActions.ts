@@ -49,6 +49,7 @@ export interface UpdatePredictionMessage extends WebSocketMessageBase {
 export interface SubmitPredictionMessage extends WebSocketMessageBase {
   action: WebSocketAction.submitPrediction;
   prediction: PredictionDirection;
+  userUUID: string;
 }
 
 export interface RequestPredictionMessage extends WebSocketMessageBase {

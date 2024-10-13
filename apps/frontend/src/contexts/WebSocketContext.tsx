@@ -1,73 +1,112 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
-import EventEmitter from 'eventemitter3';
 import { getCurrentUser } from '@aws-amplify/auth';
-
 import {
   createRequestLatestPriceMessage,
   createRequestPredictionMessage,
   createRequestUserScoreMessage,
+  isUpdatePriceMessage,
+  isUpdateUserScoreMessage,
+  isUpdatePredictionMessage,
+  PredictionDirection,
 } from '@my-org/shared';
 
 // TODO: Replace when localstack is available
 const websocketBaseUrl =
   import.meta.env.VITE_WEBSOCKET_API_ENDPOINT || 'wss://localhost:3001';
 
-export const WebSocketContext = createContext<WebSocket | null>(null);
+interface WebSocketState {
+  btcPrice: number | null;
+  score: number | null;
+  prediction: PredictionDirection | null;
+  sendMessage: (message: string) => void;
+  clearPrediction: () => void;
+}
+
+const initialState: WebSocketState = {
+  btcPrice: null,
+  score: null,
+  prediction: null,
+  sendMessage: () => {},
+  clearPrediction: () => {},
+};
+
+export const WebSocketContext = createContext<WebSocketState>(initialState);
 
 interface WebSocketProviderProps {
   children: ReactNode;
 }
 
 export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
-  const [socket, setSocket] = useState<WebSocket | null>(null);
-  const [emitter] = useState(new EventEmitter());
+  const [state, setState] = useState<WebSocketState>(initialState);
 
   useEffect(() => {
-    let ws: WebSocket;
+    let ws: WebSocket | null = null;
 
     const connect = async () => {
       try {
         const { userId } = await getCurrentUser();
-
         const websocketUrl = `${websocketBaseUrl}?userUUID=${encodeURIComponent(userId)}`;
         ws = new WebSocket(websocketUrl);
 
         ws.onopen = () => {
           console.log('WebSocket connected');
 
-          const requestLatestPriceMessage = createRequestLatestPriceMessage();
-          ws.send(JSON.stringify(requestLatestPriceMessage));
+          const messages = [
+            createRequestLatestPriceMessage(),
+            createRequestUserScoreMessage({ userUUID: userId }),
+            createRequestPredictionMessage({ userUUID: userId }),
+          ].map((message) => JSON.stringify(message));
 
-          const requestUserScoreMessage = createRequestUserScoreMessage({
-            userUUID: userId,
+          messages.forEach((message) => {
+            ws?.send(message);
           });
-          ws.send(JSON.stringify(requestUserScoreMessage));
 
-          const requestPredictionMessage = createRequestPredictionMessage({
-            userUUID: userId,
-          });
-          ws.send(JSON.stringify(requestPredictionMessage));
+          setState((prevState) => ({
+            ...prevState,
+            sendMessage: (message: string) => {
+              if (ws?.readyState === WebSocket.OPEN) {
+                console.log('Sending message:', message);
+                ws.send(message);
+              }
+            },
+            clearPrediction: () => {
+              setState((prevState) => ({
+                ...prevState,
+                prediction: null,
+              }));
+            },
+          }));
         };
 
         ws.onclose = (event) => {
           console.log('WebSocket disconnected', event);
-          setTimeout(() => {
-            connect();
-          }, 1000);
+          setTimeout(connect, 1000);
         };
 
         ws.onerror = (error) => {
           console.error('WebSocket error:', error);
-          ws.close();
+          ws?.close();
         };
 
         ws.onmessage = (event) => {
           const message = JSON.parse(event.data);
-          emitter.emit(message.action, message);
+          console.log('Received message:', message);
+          if (isUpdatePriceMessage(message)) {
+            setState((prevState) => ({
+              ...prevState,
+              btcPrice: message.price,
+            }));
+          } else if (isUpdateUserScoreMessage(message)) {
+            setState((prevState) => ({ ...prevState, score: message.score }));
+          } else if (isUpdatePredictionMessage(message)) {
+            setState((prevState) => ({
+              ...prevState,
+              prediction: message.prediction,
+            }));
+          }
         };
-
-        setSocket(ws);
-      } catch {
+      } catch (error) {
+        console.error('Failed to connect:', error);
         if (ws && ws.readyState === WebSocket.OPEN) {
           ws.close();
         }
@@ -81,10 +120,10 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
         ws.close();
       }
     };
-  }, [emitter]);
+  }, []);
 
   return (
-    <WebSocketContext.Provider value={socket}>
+    <WebSocketContext.Provider value={state}>
       {children}
     </WebSocketContext.Provider>
   );

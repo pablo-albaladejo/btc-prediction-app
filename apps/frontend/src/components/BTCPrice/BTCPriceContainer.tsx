@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import BTCPrice from './BTCPrice';
-import { useBTCPrice } from '../../hooks';
+import { WebSocketContext } from '../../contexts';
 
 const BTCPriceContainer = () => {
-  const btcPrice = useBTCPrice();
+  const { btcPrice } = useContext(WebSocketContext);
 
   return <BTCPrice btcPrice={btcPrice} />;
 };

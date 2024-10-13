@@ -68,5 +68,4 @@ export const getPrediction = async (
     })
     .promise();
   return result.Items?.[0]?.prediction ?? PredictionDirection.NONE;
-  return PredictionDirection.NONE;
 };
