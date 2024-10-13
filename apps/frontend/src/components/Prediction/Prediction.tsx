@@ -4,6 +4,7 @@ import {
   PredictionText,
   PendingText,
   CustomButton,
+  ButtonGroup,
 } from './Prediction.styles';
 
 interface PredictionProps {
@@ -24,8 +25,12 @@ const Prediction = ({
       ) : (
         <>
           <PredictionText>Make your prediction:</PredictionText>
-          <CustomButton onClick={() => onPrediction('up')}>Up</CustomButton>
-          <CustomButton onClick={() => onPrediction('down')}>Down</CustomButton>
+          <ButtonGroup>
+            <CustomButton onClick={() => onPrediction('up')}>Up</CustomButton>
+            <CustomButton onClick={() => onPrediction('down')}>
+              Down
+            </CustomButton>
+          </ButtonGroup>
         </>
       )}
     </PredictionContainer>

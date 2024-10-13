@@ -40,3 +40,11 @@ export const CustomButton = styled.button`
     box-shadow: 0 0 0 3px ${({ theme }) => theme.colors.ui.primary};
   }
 `;
+
+export const ButtonGroup = styled.div`
+  display: flex;
+  gap: 10px; /* Espacio entre los botones */
+  justify-content: center; /* Centrar los botones */
+  align-items: center;
+  margin-top: 10px;
+`;
