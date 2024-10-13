@@ -1,4 +1,8 @@
-import { createUpdatePredictionMessage, createUpdateUserScoreMessage, PredictionDirection } from "@my-org/shared";
+import {
+  createUpdatePredictionMessage,
+  createUpdateUserScoreMessage,
+  PredictionDirection,
+} from "@my-org/shared";
 import {
   getPendingPredictions,
   deleteResolvedPrediction,
