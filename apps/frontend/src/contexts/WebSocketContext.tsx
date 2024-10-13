@@ -4,8 +4,8 @@ import { getCurrentUser } from '@aws-amplify/auth';
 
 import {
   createRequestLatestPriceMessage,
+  createRequestPredictionMessage,
   createRequestUserScoreMessage,
-  createRequestPendingPredictionMessage,
 } from '@my-org/shared';
 
 // TODO: Replace when localstack is available
@@ -43,11 +43,10 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
           });
           ws.send(JSON.stringify(requestUserScoreMessage));
 
-          const requestPendingPredictionMessage =
-            createRequestPendingPredictionMessage({
-              userUUID: userId,
-            });
-          ws.send(JSON.stringify(requestPendingPredictionMessage));
+          const requestPredictionMessage = createRequestPredictionMessage({
+            userUUID: userId,
+          });
+          ws.send(JSON.stringify(requestPredictionMessage));
         };
 
         ws.onclose = (event) => {

@@ -7,7 +7,7 @@ import {
   RequestLatestPriceMessage,
   UpdateUserScoreMessage,
   SubmitPredictionMessage,
-  UpdatePendingPredictionMessage,
+  UpdatePredictionMessage,
 } from "./webSocketActions";
 
 export function isUpdatePriceMessage(
@@ -59,11 +59,11 @@ export const isSubmitPredictionMessage = (
   );
 };
 
-export const isUpdatePendingPredictionMessage = (
+export const isUpdatePredictionMessage = (
   message: WebSocketMessage,
-): message is UpdatePendingPredictionMessage => {
+): message is UpdatePredictionMessage => {
   return (
-    message.action === WebSocketAction.updatePendingPrediction &&
-    typeof message.hasPendingPrediction === "boolean"
+    message.action === WebSocketAction.updatePrediction &&
+    Object.values(PredictionDirection).includes(message.prediction)
   );
 };

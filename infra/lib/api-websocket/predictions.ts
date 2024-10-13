@@ -18,7 +18,7 @@ export class Predictions extends Construct {
   public readonly predictionsTable: dynamodb.Table;
   public readonly submitPredictionLambda: lambdaNodejs.NodejsFunction;
   public readonly evaluatePredictionsLambda: lambdaNodejs.NodejsFunction;
-  public readonly requestPendingPredictionLambda: lambdaNodejs.NodejsFunction;
+  public readonly requestPredictionLambda: lambdaNodejs.NodejsFunction;
 
   constructor(scope: Construct, id: string, props: PredictionsProps) {
     super(scope, id);
@@ -76,15 +76,15 @@ export class Predictions extends Construct {
     this.predictionsTable.grantReadWriteData(this.evaluatePredictionsLambda);
     props.connectionsTable.grantReadData(this.evaluatePredictionsLambda);
 
-    this.requestPendingPredictionLambda = new lambdaNodejs.NodejsFunction(
+    this.requestPredictionLambda = new lambdaNodejs.NodejsFunction(
       this,
-      'requestPendingPredictionLambda',
+      'requestPredictionLambda',
       {
         runtime: lambda.Runtime.NODEJS_20_X,
         projectRoot: path.join(__dirname, '../../../'),
         entry: path.join(
           __dirname,
-          '../../../apps/backend/src/websockets/requestPendingPrediction.ts',
+          '../../../apps/backend/src/websockets/requestPrediction.ts',
         ),
         environment: {
           PREDICTIONS_TABLE: this.predictionsTable.tableName,
@@ -93,12 +93,12 @@ export class Predictions extends Construct {
       },
     );
 
-    this.predictionsTable.grantReadData(this.requestPendingPredictionLambda);
+    this.predictionsTable.grantReadData(this.requestPredictionLambda);
 
-    props.webSocketApi.addRoute('requestPendingPrediction', {
+    props.webSocketApi.addRoute('requestPrediction', {
       integration: new apigatewayv2integrations.WebSocketLambdaIntegration(
         'RequestPredictionIntegration',
-        this.requestPendingPredictionLambda,
+        this.requestPredictionLambda,
       ),
     });
   }

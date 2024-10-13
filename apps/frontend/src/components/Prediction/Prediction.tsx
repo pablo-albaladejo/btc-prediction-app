@@ -9,21 +9,18 @@ import {
 import { PredictionDirection } from '@my-org/shared';
 
 interface PredictionProps {
-  hasPendingPrediction: boolean;
+  prediction: PredictionDirection | null;
   onPrediction: (direction: PredictionDirection) => void;
 }
 
-const Prediction = ({
-  hasPendingPrediction,
-  onPrediction,
-}: PredictionProps) => {
+const Prediction = ({ prediction, onPrediction }: PredictionProps) => {
+  if (prediction === null) {
+    return <PredictionText>Loading...</PredictionText>;
+  }
+
   return (
     <PredictionContainer>
-      {hasPendingPrediction ? (
-        <PendingText>
-          You have a pending prediction. Please wait for it to be resolved.
-        </PendingText>
-      ) : (
+      {prediction === PredictionDirection.NONE ? (
         <>
           <PredictionText>Make your prediction:</PredictionText>
           <ButtonGroup>
@@ -37,6 +34,11 @@ const Prediction = ({
             </CustomButton>
           </ButtonGroup>
         </>
+      ) : (
+        <PendingText>
+          You have a pending prediction: {prediction}. <br /> Please wait for it
+          to be resolved.
+        </PendingText>
       )}
     </PredictionContainer>
   );

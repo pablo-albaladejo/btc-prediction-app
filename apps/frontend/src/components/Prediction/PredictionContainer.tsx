@@ -3,14 +3,9 @@ import Prediction from './Prediction';
 import { usePrediction } from '../../hooks';
 
 const PredictionContainer = () => {
-  const { hasPendingPrediction, handlePrediction } = usePrediction();
+  const { prediction, handlePrediction } = usePrediction();
 
-  return (
-    <Prediction
-      hasPendingPrediction={hasPendingPrediction}
-      onPrediction={handlePrediction}
-    />
-  );
+  return <Prediction prediction={prediction} onPrediction={handlePrediction} />;
 };
 
 export default PredictionContainer;

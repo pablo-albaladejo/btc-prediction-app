@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import Prediction from './Prediction';
+import { PredictionDirection } from '@my-org/shared';
 
 const meta = {
   component: Prediction,
@@ -12,7 +13,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    hasPendingPrediction: false,
+    prediction: PredictionDirection.NONE,
     onPrediction: (direction: string) =>
       console.log(`Prediction submitted: ${direction}`),
   },
@@ -20,7 +21,15 @@ export const Default: Story = {
 
 export const PendingPrediction: Story = {
   args: {
-    hasPendingPrediction: true,
+    prediction: PredictionDirection.Up,
+    onPrediction: (direction: string) =>
+      console.log(`Prediction submitted: ${direction}`),
+  },
+};
+
+export const LoadingPrediction: Story = {
+  args: {
+    prediction: null,
     onPrediction: (direction: string) =>
       console.log(`Prediction submitted: ${direction}`),
   },

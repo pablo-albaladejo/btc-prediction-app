@@ -1,3 +1,4 @@
+import { PredictionDirection } from "@my-org/shared";
 import { dynamoDB } from "../utils/awsClients";
 
 const PREDICTIONS_TABLE = process.env.PREDICTIONS_TABLE!;
@@ -49,9 +50,9 @@ export const deleteResolvedPrediction = async (
     .promise();
 };
 
-export const getPredictionStatus = async (
+export const getPrediction = async (
   userUUID: string,
-): Promise<boolean> => {
+): Promise<PredictionDirection> => {
   const result = await dynamoDB
     .query({
       TableName: PREDICTIONS_TABLE,
@@ -66,5 +67,6 @@ export const getPredictionStatus = async (
       },
     })
     .promise();
-  return !!result.Items && result.Items.length > 0;
+  return result.Items?.[0]?.prediction ?? PredictionDirection.NONE;
+  return PredictionDirection.NONE;
 };

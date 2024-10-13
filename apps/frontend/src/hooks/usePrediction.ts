@@ -1,33 +1,23 @@
 import { useState, useCallback } from 'react';
-import {
-  isUpdatePendingPredictionMessage,
-  PredictionDirection,
-} from '@my-org/shared';
+import { isUpdatePredictionMessage, PredictionDirection } from '@my-org/shared';
 import { useWebSocket } from './useWebSocket';
 
 export const usePrediction = () => {
-  const [hasPendingPrediction, setHasPendingPrediction] = useState(false);
+  const [prediction, setPrediction] = useState<PredictionDirection | null>(
+    null,
+  );
 
-  const handlePendingPredictionStatus = useCallback((message: MessageEvent) => {
+  const handlePredictionStatus = useCallback((message: MessageEvent) => {
     const data = JSON.parse(message.data);
-    if (isUpdatePendingPredictionMessage(data)) {
-      setHasPendingPrediction(data.hasPendingPrediction);
+    console.log('Data', data);
+    if (isUpdatePredictionMessage(data)) {
+      setPrediction(data.prediction);
     }
   }, []);
-  useWebSocket(handlePendingPredictionStatus);
-
-  /*const { sendMessage } = useWebSocket(handlePendingPredictionStatus);
-
-  const handlePrediction = useCallback(
-    (direction: PredictionDirection) => {
-      const message = createSubmitPredictionMessage({ prediction: direction });
-      sendMessage(message);
-    },
-    [sendMessage],
-  );*/
+  useWebSocket(handlePredictionStatus);
 
   const handlePrediction = (direction: PredictionDirection) =>
     console.log('Prediction', direction);
 
-  return { hasPendingPrediction, handlePrediction };
+  return { prediction, handlePrediction };
 };

@@ -2,12 +2,16 @@ import React from 'react';
 import { screen, fireEvent } from '@testing-library/react';
 import { renderWithTheme } from '../../utils/renderWithTheme';
 import Prediction from './Prediction';
+import { PredictionDirection } from '@my-org/shared';
 
 test('renders the default state when no prediction is pending', () => {
   const mockOnPrediction = vi.fn();
 
   renderWithTheme(
-    <Prediction hasPendingPrediction={false} onPrediction={mockOnPrediction} />,
+    <Prediction
+      prediction={PredictionDirection.NONE}
+      onPrediction={mockOnPrediction}
+    />,
   );
 
   expect(screen.getByText('Make your prediction:')).toBeInTheDocument();
@@ -21,12 +25,12 @@ test('renders the default state when no prediction is pending', () => {
 
 test('renders the pending state when prediction is pending', () => {
   renderWithTheme(
-    <Prediction hasPendingPrediction={true} onPrediction={vi.fn()} />,
+    <Prediction prediction={PredictionDirection.Up} onPrediction={vi.fn()} />,
   );
 
   expect(
     screen.getByText(
-      'You have a pending prediction. Please wait for it to be resolved.',
+      'You have a pending prediction: up. Please wait for it to be resolved.'
     ),
   ).toBeInTheDocument();
 
