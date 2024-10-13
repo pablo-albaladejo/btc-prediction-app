@@ -9,7 +9,7 @@ import {
 
 // TODO: Replace when localstack is available
 const websocketBaseUrl =
-  process.env.REACT_APP_WEBSOCKET_API_ENDPOINT || 'wss://localhost:3001';
+  import.meta.env.VITE_WEBSOCKET_API_ENDPOINT || 'wss://localhost:3001';
 
 export const WebSocketContext = createContext<WebSocket | null>(null);
 

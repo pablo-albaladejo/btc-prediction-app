@@ -4,7 +4,7 @@ import { renderWithTheme } from '../../utils/renderWithTheme';
 import Prediction from './Prediction';
 
 test('renders the default state when no prediction is pending', () => {
-  const mockOnPrediction = jest.fn();
+  const mockOnPrediction = vi.fn();
 
   renderWithTheme(
     <Prediction hasPendingPrediction={false} onPrediction={mockOnPrediction} />,
@@ -21,7 +21,7 @@ test('renders the default state when no prediction is pending', () => {
 
 test('renders the pending state when prediction is pending', () => {
   renderWithTheme(
-    <Prediction hasPendingPrediction={true} onPrediction={jest.fn()} />,
+    <Prediction hasPendingPrediction={true} onPrediction={vi.fn()} />,
   );
 
   expect(

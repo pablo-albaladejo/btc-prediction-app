@@ -4,7 +4,7 @@ import SignOut from './SignOut';
 import { renderWithTheme } from '../../utils/renderWithTheme';
 
 test('calls onSignOut when the button is clicked', () => {
-  const mockSignOut = jest.fn();
+  const mockSignOut = vi.fn();
 
   renderWithTheme(<SignOut onSignOut={mockSignOut} />);
 

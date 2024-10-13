@@ -1,6 +1,7 @@
+import React from 'react';
 import { ThemeProvider } from 'styled-components';
-import { theme } from '../src/styles/theme'; // Asegúrate de que el tema esté correctamente importado
-import { GlobalStyles } from '../src/styles/globalStyles'; // Si tienes estilos globales
+import { theme } from '../src/styles/theme';
+import { GlobalStyles } from '../src/styles/globalStyles';
 
 /** @type { import('@storybook/react').Preview } */
 const preview = {
