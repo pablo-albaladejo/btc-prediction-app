@@ -21,7 +21,7 @@ else
 fi
 
 echo "Building frontend"
-cd apps/frontend && REACT_APP_WEBSOCKET_API_ENDPOINT=$websocket_api_endpoint npm run build && cd ../..
+cd apps/frontend && VITE_WEBSOCKET_API_ENDPOINT=$websocket_api_endpoint npm run build && cd ../..
 
 echo "Deploying FrontendStack"
 cd infra && npx cdk deploy FrontendStack --require-approval never  --outputs-file frontend-output.json && cd ..
