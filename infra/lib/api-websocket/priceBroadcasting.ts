@@ -49,7 +49,6 @@ export class PriceBroadcasting extends Construct {
         environment: {
           CONNECTIONS_TABLE: props.connectionsTable.tableName,
           COINGECKO_API_URL: 'https://api.coingecko.com/api/v3/simple/price',
-          WEBSOCKET_API_ENDPOINT: props.webSocketApiEndpoint,
           PRICE_TABLE: this.priceTable.tableName,
         },
       },

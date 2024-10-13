@@ -1,3 +1,5 @@
+import { createSuccessResponse } from "../utils/responses";
+
 /*import { broadcastMessage } from "../services/messaging";
 import { getAllConnectionsByUUID } from "../services/connections";
 import { APIGatewayEvent } from "aws-lambda";
@@ -24,5 +26,5 @@ export const handler = async (event: APIGatewayEvent) => {
   }
 };*/
 export const handler = async () => {
-  return { statusCode: 200, body: "User score sent" };
+  return createSuccessResponse("User score sent");
 };

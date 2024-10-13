@@ -1,17 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Prediction from './Prediction';
+import { usePrediction } from '../../hooks';
 
 const PredictionContainer = () => {
-  const [hasPendingPrediction, setHasPendingPrediction] = useState(false);
-
-  const handlePrediction = async (direction: string) => {
-    try {
-      console.log('Prediction submitted:', direction);
-      setHasPendingPrediction(true);
-    } catch (error) {
-      console.error('Error submitting prediction:', error);
-    }
-  };
+  const { hasPendingPrediction, handlePrediction } = usePrediction();
 
   return (
     <Prediction

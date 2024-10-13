@@ -23,7 +23,8 @@ export class UserScore extends Construct {
     super(scope, id);
 
     this.scoreTable = new dynamodb.Table(this, 'ScoreTable', {
-      partitionKey: { name: 'userId', type: dynamodb.AttributeType.STRING },
+      tableName: 'UserScores',
+      partitionKey: { name: 'userUUID', type: dynamodb.AttributeType.STRING },
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
       removalPolicy: props.removalPolicy || cdk.RemovalPolicy.RETAIN,
     });

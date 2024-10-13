@@ -1,16 +1,17 @@
 import { deleteConnection } from "../services/connections";
+import { createErrorResponse, createSuccessResponse } from "../utils/responses";
 import WebSocketConnectEvent from "./webSocketConnectEvent.interface";
 
 export const handler = async (event: WebSocketConnectEvent) => {
   const connectionId = event.requestContext.connectionId;
   if (!connectionId) {
-    return { statusCode: 400, body: "Invalid connection ID" };
+    return createErrorResponse("Invalid connection ID", 400);
   }
 
   try {
     await deleteConnection(connectionId);
-    return { statusCode: 200, body: "Disconnected." };
+    return createSuccessResponse("Disconnected");
   } catch {
-    return { statusCode: 500, body: "Failed to disconnect." };
+    return createErrorResponse("Failed to disconnect");
   }
 };

@@ -1,3 +1,4 @@
+import { PredictionDirection } from "./enums";
 import {
   UpdatePriceMessage,
   WebSocketAction,
@@ -5,6 +6,8 @@ import {
   WebSocketMessage,
   RequestLatestPriceMessage,
   UpdateUserScoreMessage,
+  SubmitPredictionMessage,
+  UpdatePendingPredictionMessage,
 } from "./webSocketActions";
 
 export function isUpdatePriceMessage(
@@ -46,3 +49,21 @@ export function isUpdateUserScoreMessage(
     typeof message.score === "number"
   );
 }
+
+export const isSubmitPredictionMessage = (
+  message: WebSocketMessage,
+): message is SubmitPredictionMessage => {
+  return (
+    message.action === WebSocketAction.submitPrediction &&
+    Object.values(PredictionDirection).includes(message.prediction)
+  );
+};
+
+export const isUpdatePendingPredictionMessage = (
+  message: WebSocketMessage,
+): message is UpdatePendingPredictionMessage => {
+  return (
+    message.action === WebSocketAction.updatePendingPrediction &&
+    typeof message.hasPendingPrediction === "boolean"
+  );
+};

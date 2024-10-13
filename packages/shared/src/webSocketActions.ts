@@ -1,9 +1,14 @@
+import { PredictionDirection } from "./enums";
+
 export enum WebSocketAction {
   updatePrice = "updatePrice",
   updateLeaderboard = "updateLeaderboard",
   requestLatestPrice = "requestLatestPrice",
   requestUserScore = "requestUserScore",
+  requestPendingPrediction = "requestPendingPrediction",
   updateUserScore = "updateUserScore",
+  updatePendingPrediction = "updatePendingPrediction",
+  submitPrediction = "submitPrediction",
 }
 
 export interface WebSocketMessageBase {
@@ -36,12 +41,30 @@ export interface UpdateUserScoreMessage extends WebSocketMessageBase {
   score: number;
 }
 
+export interface UpdatePendingPredictionMessage extends WebSocketMessageBase {
+  action: WebSocketAction.updatePendingPrediction;
+  hasPendingPrediction: boolean;
+}
+
+export interface SubmitPredictionMessage extends WebSocketMessageBase {
+  action: WebSocketAction.submitPrediction;
+  prediction: PredictionDirection;
+}
+
+export interface RequestPendingPredictionMessage extends WebSocketMessageBase {
+  action: WebSocketAction.requestPendingPrediction;
+  userUUID: string;
+}
+
 export type WebSocketMessage =
   | UpdatePriceMessage
   | UpdateLeaderboardMessage
   | RequestLatestPriceMessage
   | RequestUserScoreMessage
-  | UpdateUserScoreMessage;
+  | UpdateUserScoreMessage
+  | RequestPendingPredictionMessage
+  | SubmitPredictionMessage
+  | UpdatePendingPredictionMessage;
 
 export const createUpdatePriceMessage = (
   payload: MessagePayload<UpdatePriceMessage>,
@@ -82,6 +105,33 @@ export const createUpdateUserScoreMessage = (
 ): UpdateUserScoreMessage => {
   return {
     action: WebSocketAction.updateUserScore,
+    ...payload,
+  };
+};
+
+export const createUpdatePendingPredictionMessage = (
+  payload: MessagePayload<UpdatePendingPredictionMessage>,
+): UpdatePendingPredictionMessage => {
+  return {
+    action: WebSocketAction.updatePendingPrediction,
+    ...payload,
+  };
+};
+
+export const createRequestPendingPredictionMessage = (
+  payload: MessagePayload<RequestPendingPredictionMessage>,
+): RequestPendingPredictionMessage => {
+  return {
+    action: WebSocketAction.requestPendingPrediction,
+    ...payload,
+  };
+};
+
+export const createSubmitPredictionMessage = (
+  payload: MessagePayload<SubmitPredictionMessage>,
+): SubmitPredictionMessage => {
+  return {
+    action: WebSocketAction.submitPrediction,
     ...payload,
   };
 };

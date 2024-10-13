@@ -6,10 +6,11 @@ import {
   CustomButton,
   ButtonGroup,
 } from './Prediction.styles';
+import { PredictionDirection } from '@my-org/shared';
 
 interface PredictionProps {
   hasPendingPrediction: boolean;
-  onPrediction: (direction: string) => void;
+  onPrediction: (direction: PredictionDirection) => void;
 }
 
 const Prediction = ({
@@ -26,8 +27,12 @@ const Prediction = ({
         <>
           <PredictionText>Make your prediction:</PredictionText>
           <ButtonGroup>
-            <CustomButton onClick={() => onPrediction('up')}>Up</CustomButton>
-            <CustomButton onClick={() => onPrediction('down')}>
+            <CustomButton onClick={() => onPrediction(PredictionDirection.Up)}>
+              Up
+            </CustomButton>
+            <CustomButton
+              onClick={() => onPrediction(PredictionDirection.Down)}
+            >
               Down
             </CustomButton>
           </ButtonGroup>

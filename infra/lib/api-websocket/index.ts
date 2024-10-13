@@ -5,6 +5,7 @@ import { PriceBroadcasting } from './priceBroadcasting';
 import { WebSocketApi } from './webSocketApi';
 import { Policies } from './policies';
 import { UserScore } from './userScore';
+import { Predictions } from './predictions';
 
 export class ApiWebsocket extends Construct {
   webSocketApiEndpoint: string;
@@ -37,11 +38,23 @@ export class ApiWebsocket extends Construct {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
+    const predictions = new Predictions(this, 'Predictions', {
+      webSocketApi: webSocketApiConstruct.webSocketApi,
+      webSocketApiEndpoint: this.webSocketApiEndpoint,
+      connectionsTable: connectionHandling.connectionsTable,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+
     new Policies(this, 'Policies', {
-      broadcastPriceLambda: priceBroadcasting.broadcastPriceLambda,
-      requestLatestPriceLambda: priceBroadcasting.requestLatestPriceLambda,
-      requestUserScoreLambda: userScore.requestUserScoreLambda,
-      updateUserScoreLambda: userScore.updateUserScoreLambda,
+      lamdas: [
+        priceBroadcasting.broadcastPriceLambda,
+        priceBroadcasting.requestLatestPriceLambda,
+        userScore.requestUserScoreLambda,
+        userScore.updateUserScoreLambda,
+        predictions.submitPredictionLambda,
+        predictions.evaluatePredictionsLambda,
+        predictions.requestPendingPredictionLambda,
+      ],
       webSocketApiId: webSocketApiConstruct.webSocketApi.apiId,
       webSocketStageName: webSocketApiConstruct.webSocketStage.stageName,
     });

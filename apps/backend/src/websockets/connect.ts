@@ -1,4 +1,5 @@
 import { saveConnection } from "../services/connections";
+import { createErrorResponse, createSuccessResponse } from "../utils/responses";
 import WebSocketConnectEvent from "./webSocketConnectEvent.interface";
 
 export const handler = async (event: WebSocketConnectEvent) => {
@@ -6,13 +7,13 @@ export const handler = async (event: WebSocketConnectEvent) => {
   const userUUID = event.queryStringParameters?.userUUID;
 
   if (!connectionId || !userUUID) {
-    return { statusCode: 400, body: "Invalid connection ID or user UUID" };
+    return createErrorResponse("Invalid connection ID or user UUID");
   }
 
   try {
     await saveConnection(connectionId, userUUID);
-    return { statusCode: 200, body: "Connected." };
+    return createSuccessResponse("Connected");
   } catch {
-    return { statusCode: 500, body: "Failed to connect." };
+    return createErrorResponse("Failed to connect");
   }
 };

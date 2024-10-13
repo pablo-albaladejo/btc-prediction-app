@@ -2,11 +2,12 @@ import { getLatestPrice } from "../services/priceStore";
 import { sendMessage } from "../services/messaging";
 import { createUpdatePriceMessage } from "@my-org/shared";
 import WebSocketConnectEvent from "./webSocketConnectEvent.interface";
+import { createErrorResponse, createSuccessResponse } from "../utils/responses";
 
 export const handler = async (event: WebSocketConnectEvent) => {
   const connectionId = event.requestContext.connectionId;
   if (!connectionId) {
-    return { statusCode: 400, body: "Invalid connection ID" };
+    return createErrorResponse("Invalid connection ID", 400);
   }
 
   try {
@@ -19,8 +20,8 @@ export const handler = async (event: WebSocketConnectEvent) => {
       await sendMessage(connectionId, dataToSend);
     }
 
-    return { statusCode: 200, body: "Latest price sent." };
+    return createSuccessResponse("Latest price sent");
   } catch {
-    return { statusCode: 500, body: "Failed to send latest price." };
+    return createErrorResponse("Failed to send latest price");
   }
 };

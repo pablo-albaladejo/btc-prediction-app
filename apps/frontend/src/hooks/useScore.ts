@@ -8,7 +8,6 @@ export const useScore = () => {
   const handleScoreUpdate = useCallback((message: MessageEvent) => {
     const data = JSON.parse(message.data);
     if (isUpdateUserScoreMessage(data)) {
-      console.log('Received message at UserScore:', data);
       setScore(data.score);
     }
   }, []);
