@@ -7,7 +7,7 @@ export class FrontendStack extends cdk.Stack {
     super(scope, id, props);
 
     const staticSite = new StaticSite(this, 'StaticSite', {
-      assetsFolder: '../apps/frontend/build',
+      assetsFolder: '../apps/frontend/dist',
     });
 
     new cdk.CfnOutput(this, 'WebsiteURL', {
