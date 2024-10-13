@@ -1,7 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { ConnectionHandling } from './connectionHandling';
-import { PriceBroadcasting } from './priceBroadcasting';
+import { Price } from './price';
 import { WebSocketApi } from './webSocketApi';
 import { Policies } from './policies';
 import { UserScore } from './userScore';
@@ -24,7 +24,7 @@ export class ApiWebsocket extends Construct {
       },
     );
 
-    const priceBroadcasting = new PriceBroadcasting(this, 'PriceBroadcasting', {
+    const price = new Price(this, 'Price', {
       webSocketApi: webSocketApiConstruct.webSocketApi,
       connectionsTable: connectionHandling.connectionsTable,
       webSocketApiEndpoint: webSocketApiConstruct.webSocketApiEndpoint,
@@ -42,15 +42,16 @@ export class ApiWebsocket extends Construct {
       webSocketApi: webSocketApiConstruct.webSocketApi,
       webSocketApiEndpoint: this.webSocketApiEndpoint,
       connectionsTable: connectionHandling.connectionsTable,
+      priceTable: price.priceTable,
+      scoreTable: userScore.scoreTable,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
     new Policies(this, 'Policies', {
       lamdas: [
-        priceBroadcasting.broadcastPriceLambda,
-        priceBroadcasting.requestLatestPriceLambda,
+        price.priceUpdateLambda,
+        price.requestLatestPriceLambda,
         userScore.requestUserScoreLambda,
-        userScore.updateUserScoreLambda,
         predictions.submitPredictionLambda,
         predictions.evaluatePredictionsLambda,
         predictions.requestPredictionLambda,

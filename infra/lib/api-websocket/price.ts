@@ -9,19 +9,19 @@ import * as path from 'path';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib';
 
-export interface PriceBroadcastingProps {
+export interface PriceProps {
   readonly webSocketApi: apigatewayv2.WebSocketApi;
   readonly connectionsTable: dynamodb.Table;
   readonly webSocketApiEndpoint: string;
   readonly removalPolicy?: cdk.RemovalPolicy;
 }
 
-export class PriceBroadcasting extends Construct {
+export class Price extends Construct {
   public readonly priceTable: dynamodb.Table;
-  public readonly broadcastPriceLambda: lambdaNodejs.NodejsFunction;
+  public readonly priceUpdateLambda: lambdaNodejs.NodejsFunction;
   public readonly requestLatestPriceLambda: lambdaNodejs.NodejsFunction;
 
-  constructor(scope: Construct, id: string, props: PriceBroadcastingProps) {
+  constructor(scope: Construct, id: string, props: PriceProps) {
     super(scope, id);
 
     const removalPolicy = props.removalPolicy || cdk.RemovalPolicy.RETAIN;
@@ -31,31 +31,32 @@ export class PriceBroadcasting extends Construct {
         name: 'id',
         type: dynamodb.AttributeType.STRING,
       },
-      tableName: 'LatestBTCPrice',
+      tableName: 'Price',
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
       removalPolicy: removalPolicy,
     });
 
-    this.broadcastPriceLambda = new lambdaNodejs.NodejsFunction(
+    this.priceUpdateLambda = new lambdaNodejs.NodejsFunction(
       this,
-      'BroadcastPriceLambda',
+      'PriceUpdateLambda',
       {
         runtime: lambda.Runtime.NODEJS_20_X,
         projectRoot: path.join(__dirname, '../../../'),
         entry: path.join(
           __dirname,
-          '../../../apps/backend/src/websockets/broadcastBTCPrice.ts',
+          '../../../apps/backend/src/websockets/priceUpdate.ts',
         ),
         environment: {
           CONNECTIONS_TABLE: props.connectionsTable.tableName,
+          WEBSOCKET_API_ENDPOINT: props.webSocketApiEndpoint,
           COINGECKO_API_URL: 'https://api.coingecko.com/api/v3/simple/price',
           PRICE_TABLE: this.priceTable.tableName,
         },
       },
     );
 
-    props.connectionsTable.grantReadData(this.broadcastPriceLambda);
-    this.priceTable.grantWriteData(this.broadcastPriceLambda);
+    props.connectionsTable.grantReadData(this.priceUpdateLambda);
+    this.priceTable.grantReadWriteData(this.priceUpdateLambda);
 
     this.requestLatestPriceLambda = new lambdaNodejs.NodejsFunction(
       this,
@@ -83,10 +84,10 @@ export class PriceBroadcasting extends Construct {
       ),
     });
 
-    const rule = new events.Rule(this, 'BroadcastPriceRule', {
+    const rule = new events.Rule(this, 'PriceRule', {
       schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
     });
 
-    rule.addTarget(new targets.LambdaFunction(this.broadcastPriceLambda));
+    rule.addTarget(new targets.LambdaFunction(this.priceUpdateLambda));
   }
 }

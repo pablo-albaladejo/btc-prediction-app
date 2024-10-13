@@ -17,7 +17,6 @@ export interface UserScoreProps {
 export class UserScore extends Construct {
   public readonly scoreTable: dynamodb.Table;
   public readonly requestUserScoreLambda: lambdaNodejs.NodejsFunction;
-  public readonly updateUserScoreLambda: lambdaNodejs.NodejsFunction;
 
   constructor(scope: Construct, id: string, props: UserScoreProps) {
     super(scope, id);
@@ -53,26 +52,5 @@ export class UserScore extends Construct {
         this.requestUserScoreLambda,
       ),
     });
-
-    this.updateUserScoreLambda = new lambdaNodejs.NodejsFunction(
-      this,
-      'UpdateUserScoreLambda',
-      {
-        runtime: lambda.Runtime.NODEJS_20_X,
-        projectRoot: path.join(__dirname, '../../../'),
-        entry: path.join(
-          __dirname,
-          '../../../apps/backend/src/websockets/updateUserScore.ts',
-        ),
-        environment: {
-          SCORE_TABLE: this.scoreTable.tableName,
-          CONNECTIONS_TABLE: props.connectionsTable.tableName,
-          WEBSOCKET_API_ENDPOINT: props.webSocketApiEndpoint,
-        },
-      },
-    );
-
-    this.scoreTable.grantReadData(this.updateUserScoreLambda);
-    props.connectionsTable.grantReadData(this.updateUserScoreLambda);
   }
 }

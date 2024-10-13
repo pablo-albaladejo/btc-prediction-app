@@ -22,12 +22,20 @@ export const savePrediction = async (
 };
 
 export const getPendingPredictions = async () => {
+  const currentTimestamp = Math.floor(Date.now() / 1000);
+  const timestampLimit = currentTimestamp - 60;
+
   const pendingPredictions = await dynamoDB
     .scan({
       TableName: PREDICTIONS_TABLE,
-      FilterExpression: "status = :status",
+      FilterExpression: "#status = :status AND #timestamp >= :timestampLimit",
+      ExpressionAttributeNames: {
+        "#status": "status",
+        "#timestamp": "timestamp",
+      },
       ExpressionAttributeValues: {
         ":status": "pending",
+        ":timestampLimit": timestampLimit,
       },
     })
     .promise();
