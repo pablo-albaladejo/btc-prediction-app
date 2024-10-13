@@ -56,6 +56,7 @@ jobs:
             echo "Error: WebSocketApiEndpoint not found in $FILE_PATH"
             exit 1
           else
+            echo "::add-mask::$websocket_api_endpoint"
             echo "WEBSOCKET_API_ENDPOINT=$websocket_api_endpoint" >> $GITHUB_ENV
           fi
 
@@ -74,6 +75,7 @@ jobs:
             echo "Error: UserPoolId not found in $FILE_PATH"
             exit 1
           else
+            echo "::add-mask::$user_pool_id"
             echo "USER_POOL_ID=$user_pool_id" >> $GITHUB_ENV
           fi
 
@@ -86,6 +88,7 @@ jobs:
             echo "Error: UserPoolClientId not found in $FILE_PATH"
             exit 1
           else
+            echo "::add-mask::$user_pool_client_id"
             echo "USER_POOL_CLIENT_ID=$user_pool_client_id" >> $GITHUB_ENV
           fi
 
@@ -98,6 +101,7 @@ jobs:
             echo "Error: IdentityPoolId not found in $FILE_PATH"
             exit 1
           else
+            echo "::add-mask::$identity_pool_id"
             echo "IDENTITY_POOL_ID=$identity_pool_id" >> $GITHUB_ENV
           fi
       
@@ -123,3 +127,9 @@ jobs:
           FILE_PATH="./infra/frontend-output.json"
           website_url=$(jq -r '.FrontendStack.WebsiteURL' "$FILE_PATH")
           echo "The value of WebsiteURL is: $website_url"
+      
+      - name: Get StorybookURL
+        run: |
+          FILE_PATH="./infra/frontend-output.json"
+          storybook_url=$(jq -r '.FrontendStack.StorybookURL' "$FILE_PATH")
+          echo "The value of StorybookURL is: $storybook_url"
