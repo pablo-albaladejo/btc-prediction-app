@@ -59,9 +59,8 @@ export const handler = async () => {
         await broadcastMessage(connections, dataToSend);
       },
     );
-
-    // Esperar a que todas las promesas se resuelvan
     await Promise.all(promises);
+
     return createSuccessResponse("Predictions evaluated");
   } catch {
     return createErrorResponse("Failed to evaluate predictions");
