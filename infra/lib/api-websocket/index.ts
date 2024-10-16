@@ -57,6 +57,7 @@ export class ApiWebsocket extends Construct {
       lamdas: [
         price.priceUpdateLambda,
         price.requestLatestPriceLambda,
+        price.priceStreamHandlerLambda,
         userScore.requestUserScoreLambda,
         predictions.submitPredictionLambda,
         predictions.evaluatePredictionsLambda,
