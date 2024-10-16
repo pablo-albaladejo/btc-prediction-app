@@ -9,6 +9,12 @@ export const savePrediction = async (
   direction: PredictionDirection,
   price: number,
 ) => {
+  const existingPrediction = await getPrediction(userUUID);
+
+  if (existingPrediction !== PredictionDirection.NONE) {
+    throw new Error("There is already a pending prediction for this user.");
+  }
+
   await dynamoDB
     .put({
       TableName: PREDICTIONS_TABLE,
@@ -77,5 +83,6 @@ export const getPrediction = async (
       },
     })
     .promise();
-  return result.Items?.[0]?.prediction ?? PredictionDirection.NONE;
+
+  return result.Items?.[0]?.direction ?? PredictionDirection.NONE;
 };
