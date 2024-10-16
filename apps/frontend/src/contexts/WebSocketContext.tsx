@@ -46,18 +46,14 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
       try {
         const session = await fetchAuthSession();
         const jwtToken = session.tokens?.accessToken.toString();
-        console.log('JWT token:', jwtToken);
         if (!jwtToken) {
           throw new Error('JWT token not available. Please log in again.');
         }
 
         const websocketUrl = `${websocketBaseUrl}?Authorization=${encodeURIComponent(jwtToken)}`;
-        console.log('Connecting to WebSocket:', websocketUrl);
         ws = new WebSocket(websocketUrl);
 
         ws.onopen = () => {
-          console.log('WebSocket connected');
-
           const messages = [
             createRequestLatestPriceMessage(),
             createRequestUserScoreMessage(),
@@ -72,7 +68,6 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
             ...prevState,
             sendMessage: (message: string) => {
               if (ws?.readyState === WebSocket.OPEN) {
-                console.log('Sending message:', message);
                 ws.send(message);
               }
             },
@@ -85,19 +80,16 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
           }));
         };
 
-        ws.onclose = (event) => {
-          console.log('WebSocket disconnected', event);
+        ws.onclose = () => {
           setTimeout(connect, 1000);
         };
 
-        ws.onerror = (error) => {
-          console.error('WebSocket error:', error);
+        ws.onerror = () => {
           ws?.close();
         };
 
         ws.onmessage = (event) => {
           const message = JSON.parse(event.data);
-          console.log('Received message:', message);
           if (isUpdatePriceMessage(message)) {
             setState((prevState) => ({
               ...prevState,
@@ -112,8 +104,7 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
             }));
           }
         };
-      } catch (error) {
-        console.error('Failed to connect:', error);
+      } catch {
         if (ws && ws.readyState === WebSocket.OPEN) {
           ws.close();
         }

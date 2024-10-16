@@ -8,6 +8,7 @@ import * as apigatewayv2Integrations from 'aws-cdk-lib/aws-apigatewayv2-integrat
 import * as path from 'path';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib';
+import * as lambdaEventSources from 'aws-cdk-lib/aws-lambda-event-sources';
 
 export interface PriceProps {
   readonly webSocketApi: apigatewayv2.WebSocketApi;
@@ -20,6 +21,7 @@ export class Price extends Construct {
   public readonly priceTable: dynamodb.Table;
   public readonly priceUpdateLambda: lambdaNodejs.NodejsFunction;
   public readonly requestLatestPriceLambda: lambdaNodejs.NodejsFunction;
+  public readonly priceStreamHandlerLambda: lambdaNodejs.NodejsFunction;
 
   constructor(scope: Construct, id: string, props: PriceProps) {
     super(scope, id);
@@ -34,6 +36,7 @@ export class Price extends Construct {
       tableName: 'Price',
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
       removalPolicy: removalPolicy,
+      stream: dynamodb.StreamViewType.NEW_IMAGE,
     });
 
     this.priceUpdateLambda = new lambdaNodejs.NodejsFunction(
@@ -47,7 +50,6 @@ export class Price extends Construct {
           '../../../apps/backend/src/websockets/priceUpdate.ts',
         ),
         environment: {
-          CONNECTIONS_TABLE: props.connectionsTable.tableName,
           WEBSOCKET_API_ENDPOINT: props.webSocketApiEndpoint,
           COINGECKO_API_URL: 'https://api.coingecko.com/api/v3/simple/price',
           PRICE_TABLE: this.priceTable.tableName,
@@ -55,7 +57,6 @@ export class Price extends Construct {
       },
     );
 
-    props.connectionsTable.grantReadData(this.priceUpdateLambda);
     this.priceTable.grantReadWriteData(this.priceUpdateLambda);
 
     this.requestLatestPriceLambda = new lambdaNodejs.NodejsFunction(
@@ -89,5 +90,36 @@ export class Price extends Construct {
     });
 
     rule.addTarget(new targets.LambdaFunction(this.priceUpdateLambda));
+
+    this.priceStreamHandlerLambda = new lambdaNodejs.NodejsFunction(
+      this,
+      'PriceStreamHandlerLambda',
+      {
+        runtime: lambda.Runtime.NODEJS_20_X,
+        projectRoot: path.join(__dirname, '../../../'),
+        entry: path.join(
+          __dirname,
+          '../../../apps/backend/src/streams/priceStreamHandler.ts',
+        ),
+        environment: {
+          CONNECTIONS_TABLE: props.connectionsTable.tableName,
+          WEBSOCKET_API_ENDPOINT: props.webSocketApiEndpoint,
+        },
+      },
+    );
+
+    props.connectionsTable.grantReadData(this.priceStreamHandlerLambda);
+    this.priceTable.grantStreamRead(this.priceStreamHandlerLambda);
+
+    const streamEventSource = new lambdaEventSources.DynamoEventSource(
+      this.priceTable,
+      {
+        startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+        batchSize: 100,
+        retryAttempts: 2,
+      },
+    );
+
+    this.priceStreamHandlerLambda.addEventSource(streamEventSource);
   }
 }

@@ -57,10 +57,13 @@ export class ApiWebsocket extends Construct {
       lamdas: [
         price.priceUpdateLambda,
         price.requestLatestPriceLambda,
+        price.priceStreamHandlerLambda,
         userScore.requestUserScoreLambda,
+        userScore.scoreStreamHandlerLambda,
         predictions.submitPredictionLambda,
         predictions.evaluatePredictionsLambda,
         predictions.requestPredictionLambda,
+        predictions.predictionStreamHandlerLambda,
       ],
       webSocketApiId: webSocketApiConstruct.webSocketApi.apiId,
       webSocketStageName: webSocketApiConstruct.webSocketStage.stageName,
