@@ -1,10 +1,11 @@
+import { APIGatewayEvent } from "aws-lambda";
+
 import { saveConnection } from "../services/connections";
 import { createErrorResponse, createSuccessResponse } from "../utils/responses";
-import WebSocketConnectEvent from "./webSocketConnectEvent.interface";
 
-export const handler = async (event: WebSocketConnectEvent) => {
+export const handler = async (event: APIGatewayEvent) => {
   const connectionId = event.requestContext.connectionId;
-  const userUUID = event.queryStringParameters?.userUUID;
+  const userUUID = event.requestContext.authorizer?.userUUID;
 
   if (!connectionId || !userUUID) {
     return createErrorResponse("Invalid connection ID or user UUID");

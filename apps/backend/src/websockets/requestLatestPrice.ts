@@ -1,10 +1,10 @@
 import { getLatestPrice } from "../services/priceStore";
 import { sendMessage } from "../services/messaging";
 import { createUpdatePriceMessage } from "@my-org/shared";
-import WebSocketConnectEvent from "./webSocketConnectEvent.interface";
 import { createErrorResponse, createSuccessResponse } from "../utils/responses";
+import { APIGatewayEvent } from "aws-lambda";
 
-export const handler = async (event: WebSocketConnectEvent) => {
+export const handler = async (event: APIGatewayEvent) => {
   const connectionId = event.requestContext.connectionId;
   if (!connectionId) {
     return createErrorResponse("Invalid connection ID", 400);

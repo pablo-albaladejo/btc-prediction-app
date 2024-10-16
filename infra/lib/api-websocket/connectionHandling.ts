@@ -5,9 +5,11 @@ import * as lambdaNodejs from 'aws-cdk-lib/aws-lambda-nodejs';
 import * as apigatewayv2 from 'aws-cdk-lib/aws-apigatewayv2';
 import * as apigatewayv2Integrations from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 import * as path from 'path';
+import * as apigatewayv2Authorizers from 'aws-cdk-lib/aws-apigatewayv2-authorizers';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 
 export interface ConnectionHandlingProps {
+  readonly authorizer: apigatewayv2Authorizers.WebSocketLambdaAuthorizer;
   readonly webSocketApi: apigatewayv2.WebSocketApi;
   readonly removalPolicy?: cdk.RemovalPolicy;
 }
@@ -80,6 +82,7 @@ export class ConnectionHandling extends Construct {
         'ConnectIntegration',
         this.connectHandler,
       ),
+      authorizer: props.authorizer,
     });
 
     props.webSocketApi.addRoute('$disconnect', {

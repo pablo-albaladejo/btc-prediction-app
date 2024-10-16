@@ -6,8 +6,7 @@ import { createErrorResponse, createSuccessResponse } from "../utils/responses";
 
 export const handler = async (event: APIGatewayEvent) => {
   const connectionId = event.requestContext.connectionId;
-  const body = JSON.parse(event.body || "{}");
-  const userUUID = body.userUUID;
+  const userUUID = event.requestContext.authorizer?.userUUID;
 
   if (!connectionId || !userUUID) {
     return createErrorResponse("Invalid connection ID or user UUID", 400);

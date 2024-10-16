@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
-import { getCurrentUser } from '@aws-amplify/auth';
+import { fetchAuthSession } from '@aws-amplify/auth';
 import {
   createRequestLatestPriceMessage,
   createRequestPredictionMessage,
@@ -44,8 +44,15 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
 
     const connect = async () => {
       try {
-        const { userId } = await getCurrentUser();
-        const websocketUrl = `${websocketBaseUrl}?userUUID=${encodeURIComponent(userId)}`;
+        const session = await fetchAuthSession();
+        const jwtToken = session.tokens?.accessToken.toString();
+        console.log('JWT token:', jwtToken);
+        if (!jwtToken) {
+          throw new Error('JWT token not available. Please log in again.');
+        }
+
+        const websocketUrl = `${websocketBaseUrl}?Authorization=${encodeURIComponent(jwtToken)}`;
+        console.log('Connecting to WebSocket:', websocketUrl);
         ws = new WebSocket(websocketUrl);
 
         ws.onopen = () => {
@@ -53,8 +60,8 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
 
           const messages = [
             createRequestLatestPriceMessage(),
-            createRequestUserScoreMessage({ userUUID: userId }),
-            createRequestPredictionMessage({ userUUID: userId }),
+            createRequestUserScoreMessage(),
+            createRequestPredictionMessage(),
           ].map((message) => JSON.stringify(message));
 
           messages.forEach((message) => {

@@ -7,9 +7,10 @@ import { broadcastMessage } from "../services/messaging";
 
 export const handler = async (event: APIGatewayEvent) => {
   const connectionId = event.requestContext.connectionId;
-  const body = JSON.parse(event.body || "{}");
+  const userUUID = event.requestContext.authorizer?.userUUID;
 
-  const { userUUID, direction, price } = body;
+  const body = JSON.parse(event.body || "{}");
+  const { direction, price } = body;
 
   if (!connectionId || !userUUID || !direction || !price) {
     return createErrorResponse(
