@@ -69,6 +69,7 @@ export class Predictions extends Construct {
       {
         runtime: lambda.Runtime.NODEJS_20_X,
         projectRoot: path.join(__dirname, '../../../'),
+        timeout: cdk.Duration.minutes(5),
         entry: path.join(
           __dirname,
           '../../../apps/backend/src/websockets/evaluatePredictions.ts',
