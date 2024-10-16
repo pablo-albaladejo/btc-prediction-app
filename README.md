@@ -267,14 +267,6 @@ As the project is under active development, the following tasks are planned:
 
   - Implement error management, environment variable control, and monitoring.
 
-- **WebSocket Authentication and Authorization:**
-
-  - **Implement authentication and authorization** for WebSocket connections to ensure only authenticated users can access the real-time data and make predictions.
-  - **Proposed Solution:**
-    - Use [AWS API Gateway WebSocket Authorizer](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-control-access.html) to manage authentication.
-    - AWS Cognito can be used to issue and validate tokens. The token should be sent as part of the WebSocket connection request, and the authorizer should verify its validity.
-    - A step-by-step guide on how to implement this can be found [here](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-lambda-auth.html).
-    - Ensure that authorization rules are enforced for specific actions (e.g., making predictions, viewing score), potentially using [AWS IAM policies](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html) for finer control.
 
 ### Frontend
 

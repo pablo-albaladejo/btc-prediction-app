@@ -7,13 +7,6 @@ export class BackendStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const apiWebsocket = new ApiWebsocket(this, 'ApiWebsocket');
-    new cdk.CfnOutput(this, 'WebSocketApiEndpoint', {
-      value: apiWebsocket.webSocketApiEndpoint,
-      description: 'The endpoint of the WebSocket API',
-      exportName: 'webSocketApiEndpoint',
-    });
-
     const auth = new Authentication(this, 'Authentication');
     new cdk.CfnOutput(this, 'UserPoolId', {
       value: auth.userPool.userPoolId,
@@ -29,6 +22,15 @@ export class BackendStack extends cdk.Stack {
       value: auth.identityPool.ref,
       description: 'The ID of the identity pool',
       exportName: 'identityPoolId',
+    });
+
+    const apiWebsocket = new ApiWebsocket(this, 'ApiWebsocket', {
+      webSocketAuthorizer: auth.webSocketAuthorizer,
+    });
+    new cdk.CfnOutput(this, 'WebSocketApiEndpoint', {
+      value: apiWebsocket.webSocketApiEndpoint,
+      description: 'The endpoint of the WebSocket API',
+      exportName: 'webSocketApiEndpoint',
     });
   }
 }

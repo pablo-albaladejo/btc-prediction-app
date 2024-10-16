@@ -1,8 +1,8 @@
+import { APIGatewayEvent } from "aws-lambda";
 import { deleteConnection } from "../services/connections";
 import { createErrorResponse, createSuccessResponse } from "../utils/responses";
-import WebSocketConnectEvent from "./webSocketConnectEvent.interface";
 
-export const handler = async (event: WebSocketConnectEvent) => {
+export const handler = async (event: APIGatewayEvent) => {
   const connectionId = event.requestContext.connectionId;
   if (!connectionId) {
     return createErrorResponse("Invalid connection ID", 400);

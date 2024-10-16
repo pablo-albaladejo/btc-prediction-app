@@ -1,15 +1,20 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { ConnectionHandling } from './connectionHandling';
+import * as apigatewayv2Authorizers from 'aws-cdk-lib/aws-apigatewayv2-authorizers';
 import { Price } from './price';
 import { WebSocketApi } from './webSocketApi';
 import { Policies } from './policies';
 import { UserScore } from './userScore';
 import { Predictions } from './predictions';
 
+interface ApiWebsocketProps {
+  webSocketAuthorizer: apigatewayv2Authorizers.WebSocketLambdaAuthorizer;
+}
+
 export class ApiWebsocket extends Construct {
   webSocketApiEndpoint: string;
-  constructor(scope: Construct, id: string) {
+  constructor(scope: Construct, id: string, props: ApiWebsocketProps) {
     super(scope, id);
 
     const webSocketApiConstruct = new WebSocketApi(this, 'WebSocketApi');
@@ -19,6 +24,7 @@ export class ApiWebsocket extends Construct {
       this,
       'ConnectionHandling',
       {
+        authorizer: props.webSocketAuthorizer,
         webSocketApi: webSocketApiConstruct.webSocketApi,
         removalPolicy: cdk.RemovalPolicy.DESTROY,
       },

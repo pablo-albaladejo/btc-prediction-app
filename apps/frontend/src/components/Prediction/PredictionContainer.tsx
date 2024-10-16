@@ -5,19 +5,15 @@ import {
   PredictionDirection,
   createSubmitPredictionMessage,
 } from '@my-org/shared';
-import { getCurrentUser } from '@aws-amplify/auth';
 
 const PredictionContainer = () => {
   const { direction, btcPrice, sendMessage, clearPrediction } =
     useContext(WebSocketContext);
 
   const handlePrediction = async (direction: PredictionDirection) => {
-    const userId = (await getCurrentUser()).userId;
-
-    if (direction && btcPrice && userId) {
+    if (direction && btcPrice) {
       const message = createSubmitPredictionMessage({
         direction,
-        userUUID: userId,
         price: btcPrice,
       });
       sendMessage(JSON.stringify(message));
