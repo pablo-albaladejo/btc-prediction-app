@@ -1,8 +1,4 @@
-import {
-  createUpdatePredictionMessage,
-  createUpdateUserScoreMessage,
-  PredictionDirection,
-} from "@my-org/shared";
+import { PredictionDirection } from "@my-org/shared";
 import {
   getPendingPredictions,
   deleteResolvedPrediction,
@@ -11,8 +7,6 @@ import { getLatestPrice } from "../services/priceStore";
 
 import { createErrorResponse, createSuccessResponse } from "../utils/responses";
 import { updateUserScore } from "../services/scoreStore";
-import { getAllConnectionsByUUID } from "../services/connections";
-import { broadcastMessage } from "../services/messaging";
 
 const getEvaluation = (
   latestPrice: number,
@@ -38,25 +32,11 @@ export const handler = async () => {
         const timeLapsed = Math.floor((Date.now() - timestamp) / 1000);
         if (timeLapsed < 60) return;
 
-        const connections = await getAllConnectionsByUUID(userUUID);
-
         const delta = getEvaluation(latestPrice, price, direction);
-        const score = await updateUserScore(userUUID, delta);
 
-        //TODO: Use DynamoDB streams to broadcast the message
-        const scoreMessage = createUpdateUserScoreMessage({
-          score,
-        });
-        const scoreDataToSend = JSON.stringify(scoreMessage);
-        await broadcastMessage(connections, scoreDataToSend);
-
+        // TODO: use transaction to update score and delete prediction
+        await updateUserScore(userUUID, delta);
         await deleteResolvedPrediction(userUUID, timestamp);
-        //TODO: Use DynamoDB streams to broadcast the message
-        const message = createUpdatePredictionMessage({
-          direction: PredictionDirection.NONE,
-        });
-        const dataToSend = JSON.stringify(message);
-        await broadcastMessage(connections, dataToSend);
       },
     );
     await Promise.all(promises);

@@ -259,9 +259,9 @@ As the project is under active development, the following tasks are planned:
 
   - Define test suites with [AWS SAM](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html) to simulate local invocation of Lambdas.
 
-- **Improve Decoupling:**
+- **Improve Data Consistency and Atomicity:**
 
-  - Use [DynamoDB Streams](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Streams.html) to decouple dependencies between Lambdas.
+  - Use [DynamoDB Transactions](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/transactions.html) to ensure atomic, all-or-nothing operations across multiple items. This helps maintain data consistency, especially when working with interdependent data across different tables or items within a single table.
 
 - **Enhancements:**
 

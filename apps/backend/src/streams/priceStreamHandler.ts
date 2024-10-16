@@ -5,9 +5,6 @@ import { broadcastMessage } from "../services/messaging";
 
 export const handler = async (event: DynamoDBStreamEvent) => {
   for (const record of event.Records) {
-    console.log("Event type:", record.eventName);
-    console.log("Record data:", JSON.stringify(record.dynamodb, null, 2));
-
     if (record.dynamodb?.NewImage) {
       const newPrice = record.dynamodb.NewImage.price.N;
 
@@ -20,6 +17,4 @@ export const handler = async (event: DynamoDBStreamEvent) => {
       }
     }
   }
-
-  return `Processed ${event.Records.length} records.`;
 };

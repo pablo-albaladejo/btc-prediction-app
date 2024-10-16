@@ -93,7 +93,7 @@ export class Price extends Construct {
 
     this.priceStreamHandlerLambda = new lambdaNodejs.NodejsFunction(
       this,
-      'StreamHandlerLambda',
+      'PriceStreamHandlerLambda',
       {
         runtime: lambda.Runtime.NODEJS_20_X,
         projectRoot: path.join(__dirname, '../../../'),

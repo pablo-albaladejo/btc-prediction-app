@@ -6,6 +6,7 @@ import * as apigatewayv2integrations from 'aws-cdk-lib/aws-apigatewayv2-integrat
 import * as cdk from 'aws-cdk-lib';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import * as path from 'path';
+import * as lambdaEventSources from 'aws-cdk-lib/aws-lambda-event-sources';
 
 export interface UserScoreProps {
   readonly webSocketApi: apigatewayv2.WebSocketApi;
@@ -17,6 +18,7 @@ export interface UserScoreProps {
 export class UserScore extends Construct {
   public readonly scoreTable: dynamodb.Table;
   public readonly requestUserScoreLambda: lambdaNodejs.NodejsFunction;
+  public readonly scoreStreamHandlerLambda: lambdaNodejs.NodejsFunction;
 
   constructor(scope: Construct, id: string, props: UserScoreProps) {
     super(scope, id);
@@ -26,6 +28,7 @@ export class UserScore extends Construct {
       partitionKey: { name: 'userUUID', type: dynamodb.AttributeType.STRING },
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
       removalPolicy: props.removalPolicy || cdk.RemovalPolicy.RETAIN,
+      stream: dynamodb.StreamViewType.NEW_IMAGE,
     });
 
     this.requestUserScoreLambda = new lambdaNodejs.NodejsFunction(
@@ -52,5 +55,36 @@ export class UserScore extends Construct {
         this.requestUserScoreLambda,
       ),
     });
+
+    this.scoreStreamHandlerLambda = new lambdaNodejs.NodejsFunction(
+      this,
+      'ScoreStreamHandlerLambda',
+      {
+        runtime: lambda.Runtime.NODEJS_20_X,
+        projectRoot: path.join(__dirname, '../../../'),
+        entry: path.join(
+          __dirname,
+          '../../../apps/backend/src/streams/scoreStreamHandler.ts',
+        ),
+        environment: {
+          CONNECTIONS_TABLE: props.connectionsTable.tableName,
+          WEBSOCKET_API_ENDPOINT: props.webSocketApiEndpoint,
+        },
+      },
+    );
+
+    props.connectionsTable.grantReadData(this.scoreStreamHandlerLambda);
+    this.scoreTable.grantStreamRead(this.scoreStreamHandlerLambda);
+
+    const streamEventSource = new lambdaEventSources.DynamoEventSource(
+      this.scoreTable,
+      {
+        startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+        batchSize: 100,
+        retryAttempts: 2,
+      },
+    );
+
+    this.scoreStreamHandlerLambda.addEventSource(streamEventSource);
   }
 }

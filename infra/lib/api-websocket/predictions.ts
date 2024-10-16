@@ -7,6 +7,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import * as path from 'path';
 import * as events from 'aws-cdk-lib/aws-events';
+import * as lambdaEventSources from 'aws-cdk-lib/aws-lambda-event-sources';
 import * as targets from 'aws-cdk-lib/aws-events-targets';
 
 export interface PredictionsProps {
@@ -23,6 +24,7 @@ export class Predictions extends Construct {
   public readonly submitPredictionLambda: lambdaNodejs.NodejsFunction;
   public readonly evaluatePredictionsLambda: lambdaNodejs.NodejsFunction;
   public readonly requestPredictionLambda: lambdaNodejs.NodejsFunction;
+  public readonly predictionStreamHandlerLambda: lambdaNodejs.NodejsFunction;
 
   constructor(scope: Construct, id: string, props: PredictionsProps) {
     super(scope, id);
@@ -33,6 +35,7 @@ export class Predictions extends Construct {
       sortKey: { name: 'timestamp', type: dynamodb.AttributeType.NUMBER },
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
       removalPolicy: props.removalPolicy || cdk.RemovalPolicy.RETAIN,
+      stream: dynamodb.StreamViewType.NEW_IMAGE,
     });
 
     this.submitPredictionLambda = new lambdaNodejs.NodejsFunction(
@@ -76,8 +79,6 @@ export class Predictions extends Construct {
         ),
         environment: {
           PREDICTIONS_TABLE: this.predictionsTable.tableName,
-          CONNECTIONS_TABLE: props.connectionsTable.tableName,
-          WEBSOCKET_API_ENDPOINT: props.webSocketApiEndpoint,
           PRICE_TABLE: props.priceTable.tableName,
           SCORE_TABLE: props.scoreTable.tableName,
         },
@@ -85,7 +86,6 @@ export class Predictions extends Construct {
     );
 
     this.predictionsTable.grantReadWriteData(this.evaluatePredictionsLambda);
-    props.connectionsTable.grantReadData(this.evaluatePredictionsLambda);
     props.priceTable.grantReadData(this.evaluatePredictionsLambda);
     props.scoreTable.grantReadWriteData(this.evaluatePredictionsLambda);
 
@@ -119,5 +119,36 @@ export class Predictions extends Construct {
         this.requestPredictionLambda,
       ),
     });
+
+    this.predictionStreamHandlerLambda = new lambdaNodejs.NodejsFunction(
+      this,
+      'ScoreStreamHandlerLambda',
+      {
+        runtime: lambda.Runtime.NODEJS_20_X,
+        projectRoot: path.join(__dirname, '../../../'),
+        entry: path.join(
+          __dirname,
+          '../../../apps/backend/src/streams/predictionStreamHandler.ts',
+        ),
+        environment: {
+          CONNECTIONS_TABLE: props.connectionsTable.tableName,
+          WEBSOCKET_API_ENDPOINT: props.webSocketApiEndpoint,
+        },
+      },
+    );
+
+    props.connectionsTable.grantReadData(this.predictionStreamHandlerLambda);
+    this.predictionsTable.grantStreamRead(this.predictionStreamHandlerLambda);
+
+    const streamEventSource = new lambdaEventSources.DynamoEventSource(
+      this.predictionsTable,
+      {
+        startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+        batchSize: 100,
+        retryAttempts: 2,
+      },
+    );
+
+    this.predictionStreamHandlerLambda.addEventSource(streamEventSource);
   }
 }
