@@ -18,6 +18,9 @@ The **BTC Prediction App** is a multiplayer, multi-session, and multi-platform g
 - **Backend:** Node.js, AWS Lambda, WebSocket API, DynamoDB.
 - **Infrastructure:** AWS CDK, CloudFront, CloudWatch, Cognito.
 
+**Architecture:**
+
+![Diagram](./docs/assets/btc-prediction-app.drawio.svg)
 
 ## Table of Contents
 
