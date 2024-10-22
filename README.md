@@ -270,13 +270,18 @@ As the project is under active development, the following tasks are planned:
 
   - Implement error management, environment variable control, and monitoring.
 
-
 ### Frontend
 
 - **Interface Emulation:**
 
   - Investigate [Mock Service Worker (MSW)](https://mswjs.io/) to emulate interfaces for testing.
   - Explore solutions for WebSocket support in mocks.
+  
+- **Refactor Authentication Flow:**
+  
+  - Currently, Amplify is used directly in the frontend to handle communication with Cognito, which poses some challenges, such as exposing environment variables in the source code.
+  - Plan to create a new REST endpoint in the backend to manage authentication, hiding the Cognito implementation.
+  - This change will require refactoring the Amplify component currently used for authentication.
 
 ### Backend
 
